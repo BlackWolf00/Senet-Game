@@ -89,6 +89,10 @@ class _SenetAppState extends State<SenetApp> {
         appBar: AppBar(title: Text('Senet')),
         body: Column(
           children: [
+            Text(
+              'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Blu"}',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             GridView.builder(
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
