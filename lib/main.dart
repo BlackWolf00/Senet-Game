@@ -44,9 +44,42 @@ class _SenetAppState extends State<SenetApp> {
   void selectPiece(int index) {
     if (board[index] == currentPlayer) {
       setState(() {
-        selectedPiece = (selectedPiece == index) ? null : index;
+        selectedPiece = index;
       });
     }
+  }
+
+  bool isBlockedByThreeGroup(int start, int end) {
+    int rowSize = 10;
+    int minPos = min(start, end);
+    int maxPos = max(start, end);
+
+    for (int pos = minPos; pos <= maxPos; pos++) {
+      int row = pos ~/ rowSize;
+      int col = pos % rowSize;
+
+      for (int i = max(0, col - 2); i <= min(rowSize - 3, col); i++) {
+        if (board[row * rowSize + i] != currentPlayer &&
+            board[row * rowSize + i + 1] != currentPlayer &&
+            board[row * rowSize + i + 2] != currentPlayer) {
+          if (pos >= i && pos <= i + 2) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  bool isProtectedFromSwap(int index) {
+    int? player = board[index];
+    if (player == null) return false;
+
+    // Controllo se il pezzo fa parte di una coppia protetta
+    if (index > 0 && board[index - 1] == player) return true;
+    if (index < board.length - 1 && board[index + 1] == player) return true;
+
+    return false;
   }
 
   int calculateNewPosition(int position, int roll) {
@@ -74,22 +107,40 @@ class _SenetAppState extends State<SenetApp> {
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
-      if (newPosition < 30 && board[newPosition] == null) {
-        setState(() {
-          board[newPosition] = currentPlayer;
-          board[selectedPiece!] = null;
-          selectedPiece = null;
-          diceRoll = null;
-          currentPlayer = (currentPlayer == 1) ? 2 : 1;
-        });
+
+      if (newPosition < 30) {
+        int? occupyingPlayer = board[newPosition];
+        print(isBlockedByThreeGroup(selectedPiece!, newPosition));
+        if ((occupyingPlayer == null && !isBlockedByThreeGroup(selectedPiece!, newPosition)) ||
+            (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(selectedPiece!, newPosition))) {
+          setState(() {
+            if (occupyingPlayer != null) {
+              int previousPlayer = board[selectedPiece!]!;
+              board[selectedPiece!] = occupyingPlayer;
+              board[newPosition] = previousPlayer;
+            } else {
+              board[newPosition] = currentPlayer;
+              board[selectedPiece!] = null;
+            }
+            selectedPiece = null;
+            diceRoll = null;
+            currentPlayer = (currentPlayer == 1) ? 2 : 1;
+          });
+        }
       }
     }
   }
 
   Color getTileColor(int index) {
     if (index == selectedPiece) return Colors.redAccent; // Evidenzia la pedina selezionata
+    if (selectedPiece != null && diceRoll != null) {
+      int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
+      if (index ==  newPosition)
+        return Colors.deepPurpleAccent; // Evidenzia dove andrà la pedina
+    }
     if (index == 14) return Colors.green;
     if (index == 25) return Colors.yellow;
+    if (index == 26) return Colors.blue;
     if (index >= 27) return Colors.orange;
     return Colors.brown.shade300;
   }
@@ -98,7 +149,7 @@ class _SenetAppState extends State<SenetApp> {
     if (player == 1) {
       return Icon(Icons.circle, color: Colors.red, size: 24);
     } else if (player == 2) {
-      return Icon(Icons.square, color: Colors.blue, size: 24);
+      return Icon(Icons.square, color: Colors.black, size: 24);
     } else {
       return SizedBox.shrink();
     }
