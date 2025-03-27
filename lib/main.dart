@@ -49,9 +49,31 @@ class _SenetAppState extends State<SenetApp> {
     }
   }
 
+  int calculateNewPosition(int position, int roll) {
+    int row = position ~/ 10;
+    int col = position % 10;
+
+    if (row == 1) {
+      // Seconda riga, movimento da destra a sinistra
+      col -= roll;
+      if (col < 0) {
+        int overflow = -col - 1;
+        return 20 + overflow;
+      }
+    } else {
+      // Prima e terza riga, movimento da sinistra a destra
+      col += roll;
+      if (col >= 10) {
+        int overflow = col - 10;
+        return (row + 1) * 20 - 1 - overflow;
+      }
+    }
+    return row * 10 + col;
+  }
+
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
-      int newPosition = selectedPiece! + diceRoll!;
+      int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
       if (newPosition < 30 && board[newPosition] == null) {
         setState(() {
           board[newPosition] = currentPlayer;
