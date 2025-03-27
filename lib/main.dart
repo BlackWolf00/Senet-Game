@@ -44,7 +44,7 @@ class _SenetAppState extends State<SenetApp> {
   void selectPiece(int index) {
     if (board[index] == currentPlayer) {
       setState(() {
-        selectedPiece = index;
+        selectedPiece = (selectedPiece == index) ? null : index;
       });
     }
   }
@@ -87,11 +87,11 @@ class _SenetAppState extends State<SenetApp> {
   }
 
   Color getTileColor(int index) {
-    if (index == 14) return Colors.green; // Casa della Vita
-    if (index == 25) return Colors.yellow; // Casa della Felicità
-    if (index == 26) return Colors.blue; // Casa dell'Acqua
-    if (index >= 27) return Colors.orange; // Uscita
-    return Colors.brown.shade300; // Normale
+    if (index == selectedPiece) return Colors.redAccent; // Evidenzia la pedina selezionata
+    if (index == 14) return Colors.green;
+    if (index == 25) return Colors.yellow;
+    if (index >= 27) return Colors.orange;
+    return Colors.brown.shade300;
   }
 
   Widget getPiece(int? player) {
