@@ -59,10 +59,15 @@ class _SenetAppState extends State<SenetApp> {
       int col = pos % rowSize;
 
       for (int i = max(0, col - 2); i <= min(rowSize - 3, col); i++) {
-        if (board[row * rowSize + i] != currentPlayer &&
-            board[row * rowSize + i + 1] != currentPlayer &&
-            board[row * rowSize + i + 2] != currentPlayer) {
+        print(i);
+        print((board[row * rowSize + i] != currentPlayer && board[row * rowSize + i] != null) &&
+            (board[row * rowSize + i + 1] != currentPlayer && board[row * rowSize + i] != null) &&
+            (board[row * rowSize + i + 2] != currentPlayer && board[row * rowSize + i] != null));
+        if ((board[row * rowSize + i] != currentPlayer && board[row * rowSize + i] != null) &&
+            (board[row * rowSize + i + 1] != currentPlayer && board[row * rowSize + i + 1] != null) &&
+            (board[row * rowSize + i + 2] != currentPlayer && board[row * rowSize + i + 2] != null)) {
           if (pos >= i && pos <= i + 2) {
+            print([i, "indice "]);
             return true;
           }
         }
