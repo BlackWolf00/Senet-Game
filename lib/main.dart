@@ -59,15 +59,10 @@ class _SenetAppState extends State<SenetApp> {
       int col = pos % rowSize;
 
       for (int i = max(0, col - 2); i <= min(rowSize - 3, col); i++) {
-        print(i);
-        print((board[row * rowSize + i] != currentPlayer && board[row * rowSize + i] != null) &&
-            (board[row * rowSize + i + 1] != currentPlayer && board[row * rowSize + i] != null) &&
-            (board[row * rowSize + i + 2] != currentPlayer && board[row * rowSize + i] != null));
         if ((board[row * rowSize + i] != currentPlayer && board[row * rowSize + i] != null) &&
             (board[row * rowSize + i + 1] != currentPlayer && board[row * rowSize + i + 1] != null) &&
             (board[row * rowSize + i + 2] != currentPlayer && board[row * rowSize + i + 2] != null)) {
           if (pos >= i && pos <= i + 2) {
-            print([i, "indice "]);
             return true;
           }
         }
@@ -115,7 +110,6 @@ class _SenetAppState extends State<SenetApp> {
 
       if (newPosition < 30) {
         int? occupyingPlayer = board[newPosition];
-        print(isBlockedByThreeGroup(selectedPiece!, newPosition));
         if ((occupyingPlayer == null && !isBlockedByThreeGroup(selectedPiece!, newPosition)) ||
             (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(selectedPiece!, newPosition))) {
           setState(() {
