@@ -82,15 +82,23 @@ class _SenetAppState extends State<SenetApp> {
     return false;
   }
 
+  bool isProtectedBySpecialHouse(index) {
+    if (index == 15) return true;
+    if (index == 25) return true;
+    if (index == 27) return true;
+    if (index == 28) return true;
+    return false;
+  }
+
   bool isProtectedFromSwap(int index) {
     int? player = board[index];
     if (player == null) return false;
+    if (index == 29) return false;
 
     // Controllo se il pezzo fa parte di una coppia protetta
     if (index > 0 && board[index - 1] == player) return true;
     if (index < board.length - 1 && board[index + 1] == player) return true;
-
-    return false;
+    return isProtectedBySpecialHouse(index);
   }
 
   int calculateNewPosition(int position, int roll) {
