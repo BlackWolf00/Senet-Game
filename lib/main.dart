@@ -16,6 +16,8 @@ class _SenetAppState extends State<SenetApp> {
   int? selectedPiece;
   int? diceRoll;
   bool canRollDice = true;
+  int player1Score = 0;
+  int player2Score = 0;
 
   @override
   void initState() {
@@ -107,6 +109,9 @@ class _SenetAppState extends State<SenetApp> {
       col += roll;
       if (col >= 10) {
         int overflow = col - 10;
+        if ((row + 1) * 20 - 1 - overflow > 30) {
+          return row * 10 + col;
+        }
         return (row + 1) * 20 - 1 - overflow;
       }
     }
@@ -117,6 +122,9 @@ class _SenetAppState extends State<SenetApp> {
     for (int i = 0; i < board.length; i++) {
       if (board[i] == currentPlayer) {
         int newPosition = calculateNewPosition(i, diceRoll!);
+        if (newPosition == 30) {
+          return true;
+        }
         if (newPosition < 30) {
           int? occupyingPlayer = board[newPosition];
           if ((occupyingPlayer == null && !isBlockedByThreeGroup(i, newPosition)) ||
@@ -132,6 +140,20 @@ class _SenetAppState extends State<SenetApp> {
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
+      if(newPosition == 30) {
+        if(currentPlayer == 1) {
+          player1Score++;
+        } else {
+          player2Score++;
+        }
+        setState(() {
+        board[selectedPiece!] = null;
+        selectedPiece = null;
+        diceRoll = null;
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
+        canRollDice = true;
+        });
+      }
 
       if (newPosition < 30) {
         int? occupyingPlayer = board[newPosition];
