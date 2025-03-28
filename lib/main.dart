@@ -190,7 +190,7 @@ class _SenetAppState extends State<SenetApp> {
       if (index ==  newPosition)
         return Colors.deepPurpleAccent; // Evidenzia dove andrà la pedina
     }
-    if (index == 14) return Colors.green;
+    if (index == 15) return Colors.green;
     if (index == 25) return Colors.yellow;
     if (index == 26) return Colors.blue;
     if (index >= 27) return Colors.orange;
