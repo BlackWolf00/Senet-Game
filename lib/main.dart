@@ -213,6 +213,10 @@ class _SenetAppState extends State<SenetApp> {
               'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Blu"}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            Text(
+              "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             GridView.builder(
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
