@@ -15,6 +15,7 @@ class _SenetAppState extends State<SenetApp> {
   int currentPlayer = 1;
   int? selectedPiece;
   int? diceRoll;
+  bool canRollDice = true;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _SenetAppState extends State<SenetApp> {
   }
 
   void rollDice() {
+    if (!canRollDice) return;
     int count = 0;
     Random random = Random();
     for (int i = 0; i < 4; i++) {
@@ -38,7 +40,14 @@ class _SenetAppState extends State<SenetApp> {
     }
     setState(() {
       diceRoll = (count == 0) ? 5 : count;
+      canRollDice = false;
     });
+    //controllo eventuali mosse
+    if (!hasPossibleMove()) {
+      diceRoll = null; // Resetta il lancio
+      currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
+      canRollDice = true;
+    }
   }
 
   void selectPiece(int index) {
@@ -104,6 +113,22 @@ class _SenetAppState extends State<SenetApp> {
     return row * 10 + col;
   }
 
+  bool hasPossibleMove() {
+    for (int i = 0; i < board.length; i++) {
+      if (board[i] == currentPlayer) {
+        int newPosition = calculateNewPosition(i, diceRoll!);
+        if (newPosition < 30) {
+          int? occupyingPlayer = board[newPosition];
+          if ((occupyingPlayer == null && !isBlockedByThreeGroup(i, newPosition)) ||
+              (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(i, newPosition))) {
+            return true; // Se almeno una mossa è valida, il turno non è bloccato
+          }
+        }
+      }
+    }
+    return false; // Nessuna mossa valida, il turno viene passato
+  }
+
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
@@ -124,6 +149,7 @@ class _SenetAppState extends State<SenetApp> {
             selectedPiece = null;
             diceRoll = null;
             currentPlayer = (currentPlayer == 1) ? 2 : 1;
+            canRollDice = true;
           });
         }
       }
