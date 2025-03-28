@@ -212,10 +212,10 @@ class _SenetAppState extends State<SenetApp> {
               },
             ),
             ElevatedButton(
-              onPressed: rollDice,
+              onPressed: canRollDice ? rollDice : null,
               child: Text('Lancia i bastoncini'),
             ),
-            if (diceRoll != null) Text('Risultato: $diceRoll'),
+            Text('Risultato: ${diceRoll ?? ""}'),
             ElevatedButton(
               onPressed: movePiece,
               child: Text('Muovi pezzo'),
