@@ -41,7 +41,7 @@ class _SenetAppState extends State<SenetApp> {
       if (random.nextBool()) count++;
     }
     setState(() {
-      diceRoll = 1;
+      diceRoll = (count == 0) ? 5 : count;
       canRollDice = false;
     });
     //controllo eventuali mosse
@@ -178,9 +178,26 @@ class _SenetAppState extends State<SenetApp> {
     return true;
   }
 
+  int findFirstAvailableBackwardPosition() {
+    List<int> priorityPositions = [15, 16, 17, 18, 19, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+
+    for (int pos in priorityPositions) {
+      if (board[pos] == null) {
+        return pos;
+      }
+    }
+
+    return 26; // Se nessuna posizione è disponibile, rimane nella casella 26, impossibile
+  }
+
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
+
+      if (newPosition == 26) {
+        newPosition = findFirstAvailableBackwardPosition();
+      }
+
       if (newPosition == 30) {
         if (currentPlayer == 1) {
           player1Score++;
