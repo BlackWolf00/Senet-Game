@@ -41,7 +41,7 @@ class _SenetAppState extends State<SenetApp> {
       if (random.nextBool()) count++;
     }
     setState(() {
-      diceRoll = (count == 0) ? 5 : count;
+      diceRoll = 1;
       canRollDice = false;
     });
     //controllo eventuali mosse
@@ -93,6 +93,23 @@ class _SenetAppState extends State<SenetApp> {
     return false;
   }
 
+  bool isInsideHouseWithMovementLimitation(int index) {
+    if (index == 27) return true;
+    if (index == 28) return true;
+    if (index == 29) return true;
+    return false;
+  }
+
+  bool canExitFromSpecialHouse(int index, int roll) {
+    if (isInsideHouseWithMovementLimitation(index)) {
+      if (index == 27 && roll == 3) return true;
+      if (index == 28 && roll == 2) return true;
+      if (index == 29 && roll == 1) return true;
+      return false;
+    }
+    return true;
+  }
+
   bool isProtectedFromSwap(int index) {
     int? player = board[index];
     if (player == null) return false;
@@ -140,12 +157,14 @@ class _SenetAppState extends State<SenetApp> {
           int? occupyingPlayer = board[newPosition];
           if ((occupyingPlayer == null &&
                   !isBlockedByThreeGroup(i, newPosition) &&
-                  checkHouseOfHappinessRule(i, newPosition)) ||
+                  checkHouseOfHappinessRule(i, newPosition) &&
+                  canExitFromSpecialHouse(selectedPiece!, diceRoll!)) ||
               (occupyingPlayer != null &&
                   occupyingPlayer != currentPlayer &&
                   !isProtectedFromSwap(newPosition) &&
                   !isBlockedByThreeGroup(i, newPosition) &&
-                  checkHouseOfHappinessRule(i, newPosition))) {
+                  checkHouseOfHappinessRule(i, newPosition) &&
+                  canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
             return true; // Se almeno una mossa è valida, il turno non è bloccato
           }
         }
@@ -181,12 +200,14 @@ class _SenetAppState extends State<SenetApp> {
         int? occupyingPlayer = board[newPosition];
         if ((occupyingPlayer == null &&
                 !isBlockedByThreeGroup(selectedPiece!, newPosition) &&
-                checkHouseOfHappinessRule(selectedPiece!, newPosition)) ||
+                checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
+                canExitFromSpecialHouse(selectedPiece!, diceRoll!)) ||
             (occupyingPlayer != null &&
                 occupyingPlayer != currentPlayer &&
                 !isProtectedFromSwap(newPosition) &&
                 !isBlockedByThreeGroup(selectedPiece!, newPosition) &&
-                checkHouseOfHappinessRule(selectedPiece!, newPosition))) {
+                checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
+                canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
           setState(() {
             if (occupyingPlayer != null) {
               int previousPlayer = board[selectedPiece!]!;

@@ -39,6 +39,23 @@ class GameLogic {
     return row * 10 + col;
   }
 
+  bool isInsideHouseWithMovementLimitation(int index) {
+    if (index == 27) return true;
+    if (index == 28) return true;
+    if (index == 29) return true;
+    return false;
+  }
+
+  bool canExitFromSpecialHouse(int index, int roll) {
+    if (isInsideHouseWithMovementLimitation(index)) {
+      if (index == 27 && roll == 3) return true;
+      if (index == 28 && roll == 2) return true;
+      if (index == 29 && roll == 1) return true;
+      return false;
+    }
+    return true;
+  }
+
   bool hasPossibleMove() {
     for (int i = 0; i < board.length; i++) {
       if (board[i] == currentPlayer) {
