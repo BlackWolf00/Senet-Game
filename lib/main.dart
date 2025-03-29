@@ -136,7 +136,7 @@ class _SenetAppState extends State<SenetApp> {
         if (newPosition < 30) {
           int? occupyingPlayer = board[newPosition];
           if ((occupyingPlayer == null && !isBlockedByThreeGroup(i, newPosition) && checkHouseOfHappinessRule(i, newPosition)) ||
-              (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(i, newPosition))) {
+              (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(i, newPosition) && checkHouseOfHappinessRule(i, newPosition))) {
             return true; // Se almeno una mossa è valida, il turno non è bloccato
           }
         }
@@ -171,7 +171,7 @@ class _SenetAppState extends State<SenetApp> {
       if (newPosition < 30) {
         int? occupyingPlayer = board[newPosition];
         if ((occupyingPlayer == null && !isBlockedByThreeGroup(selectedPiece!, newPosition) && checkHouseOfHappinessRule(selectedPiece!, newPosition)) ||
-            (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(selectedPiece!, newPosition))) {
+            (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(selectedPiece!, newPosition) && checkHouseOfHappinessRule(selectedPiece!, newPosition))) {
           setState(() {
             if (occupyingPlayer != null) {
               int previousPlayer = board[selectedPiece!]!;
