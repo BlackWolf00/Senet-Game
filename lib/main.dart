@@ -70,9 +70,12 @@ class _SenetAppState extends State<SenetApp> {
       int col = pos % rowSize;
 
       for (int i = max(0, col - 2); i <= min(rowSize - 3, col); i++) {
-        if ((board[row * rowSize + i] != currentPlayer && board[row * rowSize + i] != null) &&
-            (board[row * rowSize + i + 1] != currentPlayer && board[row * rowSize + i + 1] != null) &&
-            (board[row * rowSize + i + 2] != currentPlayer && board[row * rowSize + i + 2] != null)) {
+        if ((board[row * rowSize + i] != currentPlayer &&
+                board[row * rowSize + i] != null) &&
+            (board[row * rowSize + i + 1] != currentPlayer &&
+                board[row * rowSize + i + 1] != null) &&
+            (board[row * rowSize + i + 2] != currentPlayer &&
+                board[row * rowSize + i + 2] != null)) {
           if (pos >= i && pos <= i + 2) {
             return true;
           }
@@ -135,8 +138,14 @@ class _SenetAppState extends State<SenetApp> {
         }
         if (newPosition < 30) {
           int? occupyingPlayer = board[newPosition];
-          if ((occupyingPlayer == null && !isBlockedByThreeGroup(i, newPosition) && checkHouseOfHappinessRule(i, newPosition)) ||
-              (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(i, newPosition) && checkHouseOfHappinessRule(i, newPosition))) {
+          if ((occupyingPlayer == null &&
+                  !isBlockedByThreeGroup(i, newPosition) &&
+                  checkHouseOfHappinessRule(i, newPosition)) ||
+              (occupyingPlayer != null &&
+                  occupyingPlayer != currentPlayer &&
+                  !isProtectedFromSwap(newPosition) &&
+                  !isBlockedByThreeGroup(i, newPosition) &&
+                  checkHouseOfHappinessRule(i, newPosition))) {
             return true; // Se almeno una mossa è valida, il turno non è bloccato
           }
         }
@@ -153,25 +162,31 @@ class _SenetAppState extends State<SenetApp> {
   void movePiece() {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
-      if(newPosition == 30) {
-        if(currentPlayer == 1) {
+      if (newPosition == 30) {
+        if (currentPlayer == 1) {
           player1Score++;
         } else {
           player2Score++;
         }
         setState(() {
-        board[selectedPiece!] = null;
-        selectedPiece = null;
-        diceRoll = null;
-        currentPlayer = (currentPlayer == 1) ? 2 : 1;
-        canRollDice = true;
+          board[selectedPiece!] = null;
+          selectedPiece = null;
+          diceRoll = null;
+          currentPlayer = (currentPlayer == 1) ? 2 : 1;
+          canRollDice = true;
         });
       }
 
       if (newPosition < 30) {
         int? occupyingPlayer = board[newPosition];
-        if ((occupyingPlayer == null && !isBlockedByThreeGroup(selectedPiece!, newPosition) && checkHouseOfHappinessRule(selectedPiece!, newPosition)) ||
-            (occupyingPlayer != null && occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition) && !isBlockedByThreeGroup(selectedPiece!, newPosition) && checkHouseOfHappinessRule(selectedPiece!, newPosition))) {
+        if ((occupyingPlayer == null &&
+                !isBlockedByThreeGroup(selectedPiece!, newPosition) &&
+                checkHouseOfHappinessRule(selectedPiece!, newPosition)) ||
+            (occupyingPlayer != null &&
+                occupyingPlayer != currentPlayer &&
+                !isProtectedFromSwap(newPosition) &&
+                !isBlockedByThreeGroup(selectedPiece!, newPosition) &&
+                checkHouseOfHappinessRule(selectedPiece!, newPosition))) {
           setState(() {
             if (occupyingPlayer != null) {
               int previousPlayer = board[selectedPiece!]!;
@@ -192,10 +207,11 @@ class _SenetAppState extends State<SenetApp> {
   }
 
   Color getTileColor(int index) {
-    if (index == selectedPiece) return Colors.redAccent; // Evidenzia la pedina selezionata
+    if (index == selectedPiece)
+      return Colors.redAccent; // Evidenzia la pedina selezionata
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
-      if (index ==  newPosition)
+      if (index == newPosition)
         return Colors.deepPurpleAccent; // Evidenzia dove andrà la pedina
     }
     if (index == 15) return Colors.green;
@@ -255,10 +271,7 @@ class _SenetAppState extends State<SenetApp> {
               child: Text('Lancia i bastoncini'),
             ),
             Text('Risultato: ${diceRoll ?? ""}'),
-            ElevatedButton(
-              onPressed: movePiece,
-              child: Text('Muovi pezzo'),
-            ),
+            ElevatedButton(onPressed: movePiece, child: Text('Muovi pezzo')),
           ],
         ),
       ),
