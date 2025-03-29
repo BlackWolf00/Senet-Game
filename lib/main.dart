@@ -227,9 +227,19 @@ class _SenetAppState extends State<SenetApp> {
                 canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
           setState(() {
             if (occupyingPlayer != null) {
-              int previousPlayer = board[selectedPiece!]!;
-              board[selectedPiece!] = occupyingPlayer;
-              board[newPosition] = previousPlayer;
+              if (selectedPiece == 25 && newPosition == 29) {
+                int actualPlayer = board[selectedPiece!]!;
+                board[26] = occupyingPlayer;
+                board[newPosition] = actualPlayer;
+                board[selectedPiece!] = null;
+                int newPositionByHouseOfWaterRule = findFirstAvailableBackwardPosition();
+                board[26] = null;
+                board[newPositionByHouseOfWaterRule] = occupyingPlayer;
+              } else {
+                int actualPlayer = board[selectedPiece!]!;
+                board[selectedPiece!] = occupyingPlayer;
+                board[newPosition] = actualPlayer;
+              }
             } else {
               board[newPosition] = currentPlayer;
               board[selectedPiece!] = null;
