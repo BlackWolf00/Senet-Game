@@ -6,11 +6,27 @@ void main() {
 }
 
 class SenetApp extends StatefulWidget {
+  const SenetApp({super.key});
+
   @override
   _SenetAppState createState() => _SenetAppState();
 }
 
-class _SenetAppState extends State<SenetApp> {
+class _SenetAppState extends State {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(debugShowCheckedModeBanner: false, home: SenetHome());
+  }
+}
+
+class SenetHome extends StatefulWidget {
+  const SenetHome({super.key}); /*({Key? key}) : super(key: key)*/
+
+  @override
+  _SenetHomeState createState() => _SenetHomeState();
+}
+
+class _SenetHomeState extends State<SenetHome> {
   List<int?> board = List.filled(30, null);
   int currentPlayer = 1;
   int? selectedPiece;
@@ -23,6 +39,19 @@ class _SenetAppState extends State<SenetApp> {
   void initState() {
     super.initState();
     initializeBoard();
+  }
+
+  void resetGame() {
+    setState(() {
+      board = List.filled(30, null);
+      diceRoll = null;
+      canRollDice = true;
+      selectedPiece = null;
+      currentPlayer = 1;
+      player1Score = 0;
+      player2Score = 0;
+      initializeBoard();
+    });
   }
 
   void initializeBoard() {
@@ -194,7 +223,7 @@ class _SenetAppState extends State<SenetApp> {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
 
-      if (newPosition == 26) {
+      if (checkHouseOfHappinessRule(selectedPiece!, newPosition) && newPosition == 26) {
         newPosition = findFirstAvailableBackwardPosition();
       }
 
@@ -208,6 +237,11 @@ class _SenetAppState extends State<SenetApp> {
           board[selectedPiece!] = null;
           selectedPiece = null;
           diceRoll = null;
+          if (player1Score == 5 || player2Score == 5) {
+            print("testo");
+            print("Giocatore ${player1Score == 5 ? 1 : 2} ha vinto!");
+            showWinDialog(context, player1Score == 5 ? 1 : 2);
+          }
           currentPlayer = (currentPlayer == 1) ? 2 : 1;
           canRollDice = true;
         });
@@ -279,6 +313,27 @@ class _SenetAppState extends State<SenetApp> {
     }
   }
 
+  void showWinDialog(BuildContext context, int player) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Giocatore $player ha vinto! 🎉"),
+          content: Text("Vuoi rigiocare?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                resetGame();
+                Navigator.of(context).pop();
+              },
+              child: Text("Rigioca"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -320,6 +375,10 @@ class _SenetAppState extends State<SenetApp> {
             ),
             Text('Risultato: ${diceRoll ?? ""}'),
             ElevatedButton(onPressed: movePiece, child: Text('Muovi pezzo')),
+            ElevatedButton(
+              onPressed: resetGame,
+              child: Text("Resetta Partita"),
+            ),
           ],
         ),
       ),
