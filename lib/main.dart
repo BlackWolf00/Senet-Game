@@ -5,28 +5,60 @@ void main() {
   runApp(SenetApp());
 }
 
-class SenetApp extends StatefulWidget {
-  const SenetApp({super.key});
-
-  @override
-  _SenetAppState createState() => _SenetAppState();
-}
-
-class _SenetAppState extends State {
+class SenetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: SenetHome());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MainMenu(),
+    );
   }
 }
 
-class SenetHome extends StatefulWidget {
-  const SenetHome({super.key}); /*({Key? key}) : super(key: key)*/
-
+class MainMenu extends StatelessWidget {
   @override
-  _SenetHomeState createState() => _SenetHomeState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Senet - Menu')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GameScreen()),
+                );
+              },
+              child: Text('Gioca contro l\'IA'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GameScreen()),
+                );
+              },
+              child: Text('Multiplayer Locale'),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text('Multiplayer Online'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _SenetHomeState extends State<SenetHome> {
+class GameScreen extends StatefulWidget {
+  @override
+  _GameScreenState createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
   List<int?> board = List.filled(30, null);
   int currentPlayer = 1;
   int? selectedPiece;
@@ -337,8 +369,16 @@ class _SenetHomeState extends State<SenetHome> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text('Senet')),
+        appBar: AppBar(title: Text('Senet'), actions: [
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ]),
         body: Column(
           children: [
             Text(
