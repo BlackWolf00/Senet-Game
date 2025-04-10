@@ -28,7 +28,7 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true)),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true, aiDifficulty: AIDifficulty.hard)),
                 );
               },
               child: Text('Gioca contro l\'IA'),
@@ -37,7 +37,7 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false)),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false, aiDifficulty: AIDifficulty.easy)),
                 );
               },
               child: Text('Multiplayer Locale'),
@@ -53,9 +53,12 @@ class MainMenu extends StatelessWidget {
   }
 }
 
+enum AIDifficulty { easy, medium, hard }
+
 class GameScreen extends StatefulWidget {
   final bool vsAI;
-  GameScreen({required this.vsAI});
+  final AIDifficulty aiDifficulty;
+  GameScreen({required this.vsAI, required this.aiDifficulty});
 
   @override
   _GameScreenState createState() => _GameScreenState();
@@ -123,19 +126,62 @@ class _GameScreenState extends State<GameScreen> {
     await Future.delayed(Duration(seconds: 1));
     rollDice();
     await Future.delayed(Duration(seconds: 1));
+
+    List<int> validMoves = [];
     for (int i = 0; i < board.length; i++) {
       if (board[i] == 2) {
         int newPosition = calculateNewPosition(i, diceRoll!);
-        int? occupyingPlayer = (newPosition < 30) ? board[newPosition] : null;
-        if (newPosition <= 30 &&
-            (occupyingPlayer == null ||
-                (occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition)))) {
-          selectedPiece = i;
-          movePiece();
-          break;
+        if (newPosition <= 30) {
+          int? occupyingPlayer = (newPosition < 30) ? board[newPosition] : null;
+          if (occupyingPlayer == null ||
+              (occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition))) {
+            validMoves.add(i);
+          }
         }
       }
     }
+
+    if (validMoves.isEmpty) return;
+
+    int chosenPiece = validMoves.first;
+
+    if (widget.aiDifficulty == AIDifficulty.medium) {
+      chosenPiece = validMoves.firstWhere(
+            (i) => calculateNewPosition(i, diceRoll!) == 30,
+        orElse: () => validMoves.firstWhere(
+              (i) {
+            int newPos = calculateNewPosition(i, diceRoll!);
+            int? opp = newPos < 30 ? board[newPos] : null;
+            return opp != null && opp != 2 && !isProtectedFromSwap(newPos);
+          },
+          orElse: () => validMoves[Random().nextInt(validMoves.length)],
+        ),
+      );
+    } else if (widget.aiDifficulty == AIDifficulty.hard) {
+      int bestScore = -999;
+      for (int i in validMoves) {
+        int score = 0;
+        int newPos = calculateNewPosition(i, diceRoll!);
+        if (newPos == 30) score += 5;
+        if (newPos < 30) {
+          int? opp = board[newPos];
+          if (opp != null && opp != 2 && !isProtectedFromSwap(newPos)) score += 3;
+          if (opp == null) score += 1;
+          if (opp == 1 && isExposed(newPos)) score -= 2;
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          chosenPiece = i;
+        }
+      }
+    }
+
+    selectedPiece = chosenPiece;
+    movePiece();
+  }
+
+  bool isExposed(int pos) {
+    return pos < 29 && board[pos + 1] != 2 && board[pos + 2] != 2;
   }
 
   void selectPiece(int index) {
