@@ -28,7 +28,7 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen()),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true)),
                 );
               },
               child: Text('Gioca contro l\'IA'),
@@ -37,7 +37,7 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen()),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false)),
                 );
               },
               child: Text('Multiplayer Locale'),
@@ -54,6 +54,9 @@ class MainMenu extends StatelessWidget {
 }
 
 class GameScreen extends StatefulWidget {
+  final bool vsAI;
+  GameScreen({required this.vsAI});
+
   @override
   _GameScreenState createState() => _GameScreenState();
 }
@@ -107,13 +110,36 @@ class _GameScreenState extends State<GameScreen> {
     });
     //controllo eventuali mosse
     if (!hasPossibleMove()) {
+      setState(() {
       diceRoll = null; // Resetta il lancio
       currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
       canRollDice = true;
+      });
+      if (widget.vsAI && currentPlayer == 2) aiPlay();
+    }
+  }
+
+  void aiPlay() async {
+    await Future.delayed(Duration(seconds: 1));
+    rollDice();
+    await Future.delayed(Duration(seconds: 1));
+    for (int i = 0; i < board.length; i++) {
+      if (board[i] == 2) {
+        int newPosition = calculateNewPosition(i, diceRoll!);
+        int? occupyingPlayer = (newPosition < 30) ? board[newPosition] : null;
+        if (newPosition <= 30 &&
+            (occupyingPlayer == null ||
+                (occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition)))) {
+          selectedPiece = i;
+          movePiece();
+          break;
+        }
+      }
     }
   }
 
   void selectPiece(int index) {
+    if (widget.vsAI && currentPlayer == 2) return;
     if (board[index] == currentPlayer) {
       setState(() {
         selectedPiece = index;
@@ -219,13 +245,13 @@ class _GameScreenState extends State<GameScreen> {
           if ((occupyingPlayer == null &&
                   !isBlockedByThreeGroup(i, newPosition) &&
                   checkHouseOfHappinessRule(i, newPosition) &&
-                  canExitFromSpecialHouse(selectedPiece!, diceRoll!)) ||
+                  canExitFromSpecialHouse(i, diceRoll!)) ||
               (occupyingPlayer != null &&
                   occupyingPlayer != currentPlayer &&
                   !isProtectedFromSwap(newPosition) &&
                   !isBlockedByThreeGroup(i, newPosition) &&
                   checkHouseOfHappinessRule(i, newPosition) &&
-                  canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
+                  canExitFromSpecialHouse(i, diceRoll!))) {
             return true; // Se almeno una mossa è valida, il turno non è bloccato
           }
         }
@@ -315,6 +341,7 @@ class _GameScreenState extends State<GameScreen> {
             currentPlayer = (currentPlayer == 1) ? 2 : 1;
             canRollDice = true;
           });
+          if (widget.vsAI && currentPlayer == 2) aiPlay();
         }
       }
     }
