@@ -15,7 +15,14 @@ class SenetApp extends StatelessWidget {
   }
 }
 
-class MainMenu extends StatelessWidget {
+class MainMenu extends StatefulWidget {
+  @override
+  _MainMenuState createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  AIDifficulty selectedDifficulty = AIDifficulty.easy;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,11 +31,28 @@ class MainMenu extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            DropdownButton<AIDifficulty>(
+              value: selectedDifficulty,
+              onChanged: (AIDifficulty? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedDifficulty = newValue;
+                  });
+                }
+              },
+              items: AIDifficulty.values.map((AIDifficulty difficulty) {
+                return DropdownMenuItem<AIDifficulty>(
+                  value: difficulty,
+                  child: Text(difficulty.toString().split('.').last.toUpperCase()),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true, aiDifficulty: AIDifficulty.hard)),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true, aiDifficulty: selectedDifficulty)),
                 );
               },
               child: Text('Gioca contro l\'IA'),
@@ -37,7 +61,7 @@ class MainMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false, aiDifficulty: AIDifficulty.easy)),
+                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false, aiDifficulty: selectedDifficulty)),
                 );
               },
               child: Text('Multiplayer Locale'),
