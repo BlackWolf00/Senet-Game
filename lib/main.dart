@@ -433,6 +433,12 @@ class _GameScreenState extends State<GameScreen> {
               },
               child: Text("Rigioca"),
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              child: Text('Torna al menu'),
+            )
           ],
         );
       },
