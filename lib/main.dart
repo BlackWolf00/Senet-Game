@@ -8,10 +8,7 @@ void main() {
 class SenetApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MainMenu(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: MainMenu());
   }
 }
 
@@ -27,50 +24,73 @@ class _MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Senet - Menu')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DropdownButton<AIDifficulty>(
-              value: selectedDifficulty,
-              onChanged: (AIDifficulty? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    selectedDifficulty = newValue;
-                  });
-                }
-              },
-              items: AIDifficulty.values.map((AIDifficulty difficulty) {
-                return DropdownMenuItem<AIDifficulty>(
-                  value: difficulty,
-                  child: Text(difficulty.toString().split('.').last.toUpperCase()),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: true, aiDifficulty: selectedDifficulty)),
-                );
-              },
-              child: Text('Gioca contro l\'IA'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GameScreen(vsAI: false, aiDifficulty: selectedDifficulty)),
-                );
-              },
-              child: Text('Multiplayer Locale'),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Multiplayer Online'),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/sfondo.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownButton<AIDifficulty>(
+                value: selectedDifficulty,
+                onChanged: (AIDifficulty? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      selectedDifficulty = newValue;
+                    });
+                  }
+                },
+                items:
+                    AIDifficulty.values.map((AIDifficulty difficulty) {
+                      return DropdownMenuItem<AIDifficulty>(
+                        value: difficulty,
+                        child: Text(
+                          difficulty.toString().split('.').last.toUpperCase(),
+                        ),
+                      );
+                    }).toList(),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => GameScreen(
+                            vsAI: true,
+                            aiDifficulty: selectedDifficulty,
+                          ),
+                    ),
+                  );
+                },
+                child: Text('Gioca contro l\'IA'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => GameScreen(
+                            vsAI: false,
+                            aiDifficulty: selectedDifficulty,
+                          ),
+                    ),
+                  );
+                },
+                child: Text('Multiplayer Locale'),
+              ),
+              ElevatedButton(
+                onPressed: () {},
+                child: Text('Multiplayer Online'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -82,6 +102,7 @@ enum AIDifficulty { easy, medium, hard }
 class GameScreen extends StatefulWidget {
   final bool vsAI;
   final AIDifficulty aiDifficulty;
+
   GameScreen({required this.vsAI, required this.aiDifficulty});
 
   @override
@@ -138,9 +159,9 @@ class _GameScreenState extends State<GameScreen> {
     //controllo eventuali mosse
     if (!hasPossibleMove()) {
       setState(() {
-      diceRoll = null; // Resetta il lancio
-      currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
-      canRollDice = true;
+        diceRoll = null; // Resetta il lancio
+        currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
+        canRollDice = true;
       });
       if (widget.vsAI && currentPlayer == 2) aiPlay();
     }
@@ -158,7 +179,8 @@ class _GameScreenState extends State<GameScreen> {
         if (newPosition <= 30) {
           int? occupyingPlayer = (newPosition < 30) ? board[newPosition] : null;
           if (occupyingPlayer == null ||
-              (occupyingPlayer != currentPlayer && !isProtectedFromSwap(newPosition))) {
+              (occupyingPlayer != currentPlayer &&
+                  !isProtectedFromSwap(newPosition))) {
             validMoves.add(i);
           }
         }
@@ -171,15 +193,13 @@ class _GameScreenState extends State<GameScreen> {
 
     if (widget.aiDifficulty == AIDifficulty.medium) {
       chosenPiece = validMoves.firstWhere(
-            (i) => calculateNewPosition(i, diceRoll!) == 30,
-        orElse: () => validMoves.firstWhere(
-              (i) {
-            int newPos = calculateNewPosition(i, diceRoll!);
-            int? opp = newPos < 30 ? board[newPos] : null;
-            return opp != null && opp != 2 && !isProtectedFromSwap(newPos);
-          },
-          orElse: () => validMoves[Random().nextInt(validMoves.length)],
-        ),
+        (i) => calculateNewPosition(i, diceRoll!) == 30,
+        orElse:
+            () => validMoves.firstWhere((i) {
+              int newPos = calculateNewPosition(i, diceRoll!);
+              int? opp = newPos < 30 ? board[newPos] : null;
+              return opp != null && opp != 2 && !isProtectedFromSwap(newPos);
+            }, orElse: () => validMoves[Random().nextInt(validMoves.length)]),
       );
     } else if (widget.aiDifficulty == AIDifficulty.hard) {
       int bestScore = -999;
@@ -189,7 +209,8 @@ class _GameScreenState extends State<GameScreen> {
         if (newPos == 30) score += 5;
         if (newPos < 30) {
           int? opp = board[newPos];
-          if (opp != null && opp != 2 && !isProtectedFromSwap(newPos)) score += 3;
+          if (opp != null && opp != 2 && !isProtectedFromSwap(newPos))
+            score += 3;
           if (opp == null) score += 1;
           if (opp == 1 && isExposed(newPos)) score -= 2;
         }
@@ -351,7 +372,8 @@ class _GameScreenState extends State<GameScreen> {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
 
-      if (checkHouseOfHappinessRule(selectedPiece!, newPosition) && newPosition == 26) {
+      if (checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
+          newPosition == 26) {
         newPosition = findFirstAvailableBackwardPosition();
       }
 
@@ -394,7 +416,8 @@ class _GameScreenState extends State<GameScreen> {
                 board[26] = occupyingPlayer;
                 board[newPosition] = actualPlayer;
                 board[selectedPiece!] = null;
-                int newPositionByHouseOfWaterRule = findFirstAvailableBackwardPosition();
+                int newPositionByHouseOfWaterRule =
+                    findFirstAvailableBackwardPosition();
                 board[26] = null;
                 board[newPositionByHouseOfWaterRule] = occupyingPlayer;
               } else {
@@ -462,7 +485,7 @@ class _GameScreenState extends State<GameScreen> {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
               child: Text('Torna al menu'),
-            )
+            ),
           ],
         );
       },
@@ -474,55 +497,66 @@ class _GameScreenState extends State<GameScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text('Senet'), actions: [
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ]),
-        body: Column(
-          children: [
-            Text(
-              'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Blu"}',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 10,
-              ),
-              itemCount: 30,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => selectPiece(index),
-                  child: Container(
-                    margin: EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: getTileColor(index),
-                      border: Border.all(color: Colors.black),
-                    ),
-                    child: Center(child: getPiece(board[index])),
-                  ),
-                );
+        appBar: AppBar(
+          title: Text('Senet'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                Navigator.pop(context);
               },
             ),
-            ElevatedButton(
-              onPressed: canRollDice ? rollDice : null,
-              child: Text('Lancia i bastoncini'),
-            ),
-            Text('Risultato: ${diceRoll ?? ""}'),
-            ElevatedButton(onPressed: movePiece, child: Text('Muovi pezzo')),
-            ElevatedButton(
-              onPressed: resetGame,
-              child: Text("Resetta Partita"),
-            ),
           ],
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/sfondo.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Blu"}',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              GridView.builder(
+                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 10,
+                ),
+                itemCount: 30,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () => selectPiece(index),
+                    child: Container(
+                      margin: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: getTileColor(index),
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: Center(child: getPiece(board[index])),
+                    ),
+                  );
+                },
+              ),
+              ElevatedButton(
+                onPressed: canRollDice ? rollDice : null,
+                child: Text('Lancia i bastoncini'),
+              ),
+              Text('Risultato: ${diceRoll ?? ""}'),
+              ElevatedButton(onPressed: movePiece, child: Text('Muovi pezzo')),
+              ElevatedButton(
+                onPressed: resetGame,
+                child: Text("Resetta Partita"),
+              ),
+            ],
+          ),
         ),
       ),
     );
