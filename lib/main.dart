@@ -1,5 +1,6 @@
 import 'game_logic.dart';
 import 'game_ui.dart';
+import 'winDialog.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -218,7 +219,7 @@ class _GameScreenState extends State<GameScreen> {
           if (player1Score == 5 || player2Score == 5) {
             print("testo");
             print("Giocatore ${player1Score == 5 ? 1 : 2} ha vinto!");
-            showWinDialog(context, player1Score == 5 ? 1 : 2);
+            showWinDialog(context, player1Score == 5 ? 1 : 2, resetGame);
           }
           currentPlayer = (currentPlayer == 1) ? 2 : 1;
           canRollDice = true;
@@ -266,33 +267,6 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
     }
-  }
-
-  void showWinDialog(BuildContext context, int player) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Giocatore $player ha vinto! 🎉"),
-          content: Text("Vuoi rigiocare?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                resetGame();
-                Navigator.of(context).pop();
-              },
-              child: Text("Rigioca"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              child: Text('Torna al menu'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
