@@ -1,11 +1,5 @@
 import 'dart:math';
 
-  void initializeBoard(board) {
-    for (int i = 0; i < 10; i++) {
-      board[i] = (i % 2 == 0) ? 1 : 2;
-    }
-  }
-
   int calculateNewPosition(int position, int roll) {
     int row = position ~/ 10;
     int col = position % 10;

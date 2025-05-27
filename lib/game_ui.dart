@@ -1,6 +1,12 @@
 import 'game_logic.dart';
 import 'package:flutter/material.dart';
 
+void initializeBoard(board) {
+  for (int i = 0; i < 10; i++) {
+    board[i] = (i % 2 == 0) ? 1 : 2;
+  }
+}
+
 Color getTileColor(int index, selectedPiece, diceRoll) {
   if (index == selectedPiece)
     return Colors.redAccent; // Evidenzia la pedina selezionata

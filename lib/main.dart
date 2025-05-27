@@ -116,14 +116,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    initializeBoard();
-  }
-
-  void initializeBoard() {
-    for (int i = 0; i < 10; i++) {
-      board[i] = (i % 2 == 0) ? 1 : 2;
-    }
-    setState(() {});
+    initializeBoard(board);
   }
 
   void resetGame() {
@@ -135,7 +128,7 @@ class _GameScreenState extends State<GameScreen> {
       currentPlayer = 1;
       player1Score = 0;
       player2Score = 0;
-      initializeBoard();
+      initializeBoard(board);
     });
   }
 
