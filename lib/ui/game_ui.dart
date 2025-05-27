@@ -1,4 +1,4 @@
-import 'game_logic.dart';
+import '../logic/game_logic.dart';
 import 'package:flutter/material.dart';
 
 void initializeBoard(board) {

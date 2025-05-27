@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:senet_app/game_logic.dart';
+import 'package:senet_app/logic/game_logic.dart';
 
 void main() {
   test('Nessuna mossa possibile quando la board è vuota', () {
