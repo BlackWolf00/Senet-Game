@@ -1,4 +1,5 @@
 import 'game_logic.dart';
+import 'game_ui.dart';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -274,31 +275,6 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  Color getTileColor(int index) {
-    if (index == selectedPiece)
-      return Colors.redAccent; // Evidenzia la pedina selezionata
-    if (selectedPiece != null && diceRoll != null) {
-      int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
-      if (index == newPosition)
-        return Colors.deepPurpleAccent; // Evidenzia dove andrà la pedina
-    }
-    if (index == 15) return Colors.green;
-    if (index == 25) return Colors.yellow;
-    if (index == 26) return Colors.blue;
-    if (index >= 27) return Colors.orange;
-    return Colors.brown.shade300;
-  }
-
-  Widget getPiece(int? player) {
-    if (player == 1) {
-      return Icon(Icons.circle, color: Colors.red, size: 24);
-    } else if (player == 2) {
-      return Icon(Icons.square, color: Colors.black, size: 24);
-    } else {
-      return SizedBox.shrink();
-    }
-  }
-
   void showWinDialog(BuildContext context, int player) {
     showDialog(
       context: context,
@@ -369,7 +345,7 @@ class _GameScreenState extends State<GameScreen> {
                     child: Container(
                       margin: EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: getTileColor(index),
+                        color: getTileColor(index, selectedPiece, diceRoll),
                         border: Border.all(color: Colors.black),
                       ),
                       child: Center(child: getPiece(board[index])),
