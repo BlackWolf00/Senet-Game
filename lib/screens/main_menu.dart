@@ -3,6 +3,8 @@ import '../screens/game_screen.dart';
 import '../utils/ai_difficulty.dart';
 
 class MainMenu extends StatefulWidget {
+  const MainMenu({super.key});
+
   @override
   _MainMenuState createState() => _MainMenuState();
 }
