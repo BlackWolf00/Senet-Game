@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../game_lobby_page.dart';
+import '../firebase_game_service.dart';
+
+class OnlineGameDialog extends StatefulWidget {
+  const OnlineGameDialog({super.key});
+
+  @override
+  State<OnlineGameDialog> createState() => _OnlineGameDialogState();
+}
+
+class _OnlineGameDialogState extends State<OnlineGameDialog> {
+  String gameId = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Multiplayer Online'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final gameId = await createOnlineGame();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => GameLobbyPage(gameId: gameId),
+                ),
+              );
+            },
+            child: Text('Crea nuova partita'),
+          ),
+          SizedBox(height: 10),
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'ID partita',
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (value) => gameId = value.trim(),
+          ),
+          SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () async {
+              if (gameId.isNotEmpty) {
+                Navigator.pop(context);
+                final gameRef = FirebaseFirestore.instance.collection('games').doc(gameId);
+                final doc = await gameRef.get();
+                final uid = FirebaseAuth.instance.currentUser?.uid;
+                if (doc.exists && uid != null) {
+                  final data = doc.data()!;
+                  if (data['player2'] == null && data['player1'] != uid) {
+                    await gameRef.update({'player2': uid, 'status': 'active'});
+                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GameLobbyPage(gameId: gameId),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Partita non trovata o già piena.')),
+                  );
+                }
+              }
+            },
+            child: Text('Unisciti a una partita'),
+          ),
+        ],
+      ),
+    );
+  }
+}

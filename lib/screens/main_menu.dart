@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../multiplayer/screen/online_game_dialog.dart';
 import '../screens/game_screen.dart';
 import '../utils/ai_difficulty.dart';
 
@@ -49,7 +50,10 @@ class _MainMenuState extends State<MainMenu> {
               _buildModeButton('Multiplayer Locale', false),
               ElevatedButton(
                 onPressed: () {
-                  // TODO: implementare multiplayer online
+                  showDialog(
+                    context: context,
+                    builder: (_) => const OnlineGameDialog(),
+                  );
                 },
                 child: Text('Multiplayer Online'),
               ),
