@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 void showWinDialog(BuildContext context, int player, VoidCallback resetGame) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text("Giocatore $player ha vinto! 🎉"),

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../screens/win_dialog.dart';
+import '../screens/online_win_dialog.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 
@@ -53,9 +52,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         if (winner != null && !hasShownDialog) {
           hasShownDialog = true;
           Future.microtask(() {
-            showWinDialog(context, winner, () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            });
+            showOnlineWinDialog(context, winner);
           });
         }
         bool canRollDice = data['canRollDice'] ?? false;
