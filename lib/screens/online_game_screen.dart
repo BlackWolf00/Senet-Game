@@ -86,6 +86,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           final roll = List.generate(4, (_) => DateTime.now().millisecondsSinceEpoch % 2).reduce((a, b) => a + b);
           final result = roll == 0 ? 5 : roll;
 
+          bool possibleMove = hasPossibleMove(board, currentPlayer, result);
+
+          if (!possibleMove) {
             await gameDoc.update({
               'diceRoll': null,
               'canRollDice': true,
