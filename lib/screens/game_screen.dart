@@ -203,7 +203,7 @@ class _GameScreenState extends State<GameScreen> {
         child: Column(
           children: [
             Text(
-              'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Blu"}',
+              'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(

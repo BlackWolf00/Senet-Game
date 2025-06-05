@@ -20,6 +20,7 @@ Future<String> createOnlineGame() async {
     'player1Score': 0,
     'player2Score': 0,
     'status': 'waiting',
+    'canRollDice': true,
     'lastMove': null,
     'createdAt': FieldValue.serverTimestamp(),
     'lastUpdated': FieldValue.serverTimestamp(),

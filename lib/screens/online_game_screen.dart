@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../screens/win_dialog.dart';
+import '../logic/game_logic.dart';
+import '../ui/game_ui.dart';
 
 class OnlineGameScreen extends StatefulWidget {
   final String gameId;
@@ -17,22 +20,9 @@ class OnlineGameScreen extends StatefulWidget {
 }
 
 class _OnlineGameScreenState extends State<OnlineGameScreen> {
-  int? selectedPiece;
+  bool hasShownDialog = false;
 
-  Color getTileColor(int index, int? selected, int? diceRoll) {
-    if (index == selected) return Colors.yellow;
-    return Colors.white;
-  }
-
-  Widget getPiece(dynamic value) {
-    if (value == null) return const SizedBox.shrink();
-    return Icon(
-      Icons.circle,
-      color: value == 1 ? Colors.blue : Colors.red,
-    );
-  }
-
-  void selectPieceOnline(int index, List board, int? currentPlayer, DocumentReference gameDoc) async {
+  void selectPiece(int index, List board, int? currentPlayer, DocumentReference gameDoc) async {
     if (currentPlayer != widget.localPlayerNumber) return;
     if (board[index] != widget.localPlayerNumber) return;
 
@@ -60,8 +50,35 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         int? currentPlayer = data['currentPlayer'];
         int? diceRoll = data['diceRoll'];
         int? winner = data['winner'];
+        if (winner != null && !hasShownDialog) {
+          hasShownDialog = true;
+          Future.microtask(() {
+            showWinDialog(context, winner, () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            });
+          });
+        }
         bool canRollDice = data['canRollDice'] ?? false;
         int? selected = data['selectedPiece'];
+        int player1Score = data['player1Score'] ?? 0;
+        int player2Score = data['player2Score'] ?? 0;
+
+        void resetGame() async {
+          List<dynamic> newBoard = List.filled(30, null);
+          initializeBoard(newBoard);
+
+          await gameDoc.update({
+            'board': newBoard,
+            'diceRoll': null,
+            'canRollDice': true,
+            'selectedPiece': null,
+            'currentPlayer': 1,
+            'player1Score': 0,
+            'player2Score': 0,
+            'winner': null,
+            'lastUpdated': FieldValue.serverTimestamp(),
+          });
+        }
 
         void rollDice() async {
           if (currentPlayer != widget.localPlayerNumber || !canRollDice) return;
@@ -69,82 +86,147 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           final roll = List.generate(4, (_) => DateTime.now().millisecondsSinceEpoch % 2).reduce((a, b) => a + b);
           final result = roll == 0 ? 5 : roll;
 
-          await gameDoc.update({
-            'diceRoll': result,
-            'canRollDice': false,
-            'lastUpdated': FieldValue.serverTimestamp(),
-          });
+            await gameDoc.update({
+              'diceRoll': null,
+              'canRollDice': true,
+              'currentPlayer': currentPlayer == 1 ? 2 : 1,
+              'lastUpdated': FieldValue.serverTimestamp(),
+            });
+          } else {
+            await gameDoc.update({
+              'diceRoll': result,
+              'canRollDice': false,
+              'lastUpdated': FieldValue.serverTimestamp(),
+            });
+          }
         }
 
-        void movePiece(int index) async {
-          if (diceRoll == null || currentPlayer != widget.localPlayerNumber) return;
+        void movePieceOnline() async {
+          if (selected == null || diceRoll == null || currentPlayer != widget.localPlayerNumber) return;
 
-          if (selected == null || board[selected] != widget.localPlayerNumber) return;
-
-          int destination = selected + diceRoll;
-          if (destination != index || destination > 29) return;
-
+          int from = selected;
+          int to = calculateNewPosition(from, diceRoll);
           List newBoard = List.from(board);
 
-          // Score if reaching the last square
-          if (destination == 29) {
-            newBoard[selected] = null;
+          // Caso speciale: Casa della felicità
+          if (checkHouseOfHappinessRule(from, to) && to == 26) {
+            to = findFirstAvailableBackwardPosition(newBoard);
+          }
+
+          // Se il giocatore arriva alla fine (casella 30)
+          if (to == 30) {
             final scoreKey = widget.localPlayerNumber == 1 ? 'player1Score' : 'player2Score';
-            int score = (data[scoreKey] ?? 0) + 1;
-            final newWinner = score == 5 ? widget.localPlayerNumber : null;
+            int playerScore = (data[scoreKey] ?? 0) + 1;
+            int? winner = playerScore == 5 ? widget.localPlayerNumber : null;
+
+            newBoard[from] = null;
 
             await gameDoc.update({
               'board': newBoard,
-              scoreKey: score,
-              'currentPlayer': 3 - widget.localPlayerNumber,
-              'diceRoll': null,
-              'canRollDice': true,
+              scoreKey: playerScore,
               'selectedPiece': null,
-              'winner': newWinner,
+              'diceRoll': null,
+              'currentPlayer': 3 - widget.localPlayerNumber,
+              'canRollDice': true,
+              'winner': winner,
               'lastUpdated': FieldValue.serverTimestamp(),
             });
             return;
           }
 
-          if (board[destination] == widget.localPlayerNumber) return;
+          if (to > 30) return;
 
-          newBoard[selected] = null;
-          newBoard[destination] = widget.localPlayerNumber;
+          int? occupyingPlayer = newBoard[to];
+
+          bool canMove = false;
+
+          if (occupyingPlayer == null) {
+            canMove = !isBlockedByThreeGroup(from, to, board, currentPlayer) &&
+                checkHouseOfHappinessRule(from, to) &&
+                canExitFromSpecialHouse(from, diceRoll);
+          } else if (occupyingPlayer != currentPlayer) {
+            canMove = !isProtectedFromSwap(to, board) &&
+                !isBlockedByThreeGroup(from, to, board, currentPlayer) &&
+                checkHouseOfHappinessRule(from, to) &&
+                canExitFromSpecialHouse(from, diceRoll);
+          }
+
+          if (!canMove) return;
+
+          // Movimento con swap o semplice
+          if (occupyingPlayer != null) {
+            if (from == 25 && to == 29) {
+              // Casa dell'acqua: rimbalzo e swap
+              int actualPlayer = newBoard[from]!;
+              newBoard[from] = null;
+              newBoard[to] = actualPlayer;
+              newBoard[26] = occupyingPlayer;
+              int backPos = findFirstAvailableBackwardPosition(newBoard);
+              newBoard[26] = null;
+              newBoard[backPos] = occupyingPlayer;
+            } else {
+              // Swap normale
+              int actualPlayer = newBoard[from]!;
+              newBoard[from] = occupyingPlayer;
+              newBoard[to] = actualPlayer;
+            }
+          } else {
+            // Movimento semplice
+            newBoard[to] = currentPlayer;
+            newBoard[from] = null;
+          }
 
           await gameDoc.update({
             'board': newBoard,
-            'currentPlayer': 3 - widget.localPlayerNumber,
-            'diceRoll': null,
-            'canRollDice': true,
             'selectedPiece': null,
+            'diceRoll': null,
+            'currentPlayer': 3 - widget.localPlayerNumber,
+            'canRollDice': true,
             'lastUpdated': FieldValue.serverTimestamp(),
           });
         }
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Online Game')),
-          body: Column(
-            children: [
-              Expanded(
-                child: GridView.builder(
+          appBar: AppBar(title: Text('Senet - ID partita: ${widget.gameId}'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/sfondo.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                GridView.builder(
                   shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 10,
                   ),
                   itemCount: 30,
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      onTap: () {
-                        if (diceRoll == null) {
-                          selectPieceOnline(index, board, currentPlayer, gameDoc);
-                        } else {
-                          movePiece(index);
-                        }
-                      },
+                      onTap: () => selectPiece(index, board, currentPlayer, gameDoc),
                       child: Container(
-                        margin: const EdgeInsets.all(4),
+                        margin: EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: getTileColor(index, selected, diceRoll),
+                          color: getTileColorOnline(index, selected, diceRoll, currentPlayer, widget.localPlayerNumber),
                           border: Border.all(color: Colors.black),
                         ),
                         child: Center(child: getPiece(board[index])),
@@ -152,27 +234,25 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                     );
                   },
                 ),
-              ),
-              if (winner == null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: rollDice,
-                      child: const Text("Roll Dice"),
-                    ),
-                    if (diceRoll != null) Text("  Rolled: $diceRoll")
-                  ],
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "Player $winner wins!",
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                )
-            ],
+                ElevatedButton(
+                  onPressed: (canRollDice && currentPlayer == widget.localPlayerNumber)
+                      ? rollDice
+                      : null,
+                  child: Text('Lancia i bastoncini'),
+                ),
+                Text('Risultato: ${diceRoll ?? ""}'),
+                ElevatedButton(
+                  onPressed: (selected != null && currentPlayer == widget.localPlayerNumber)
+                      ? () => movePieceOnline()
+                      : null,
+                  child: Text('Muovi pezzo'),
+                ),
+                ElevatedButton(
+                  onPressed: resetGame,
+                  child: Text("Resetta Partita"),
+                ),
+              ],
+            ),
           ),
         );
       },
