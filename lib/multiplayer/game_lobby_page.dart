@@ -29,7 +29,11 @@ class GameLobbyPage extends StatelessWidget {
 
           final player1 = data['player1'];
           final player2 = data['player2'];
-          final players = [player1, player2].where((p) => p != null).cast<String>().toList();
+          final players =
+              [
+                player1,
+                player2,
+              ].where((p) => p != null).cast<String>().toList();
 
           if (currentUser != null &&
               currentUser.uid != player1 &&
@@ -43,7 +47,11 @@ class GameLobbyPage extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => OnlineGameScreen(gameId: gameId, localPlayerNumber: localPlayerNumber),
+                  builder:
+                      (_) => OnlineGameScreen(
+                        gameId: gameId,
+                        localPlayerNumber: localPlayerNumber,
+                      ),
                 ),
               );
             });

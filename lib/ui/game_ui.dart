@@ -22,7 +22,13 @@ Color getTileColor(int index, selectedPiece, diceRoll) {
   return Colors.brown.shade300;
 }
 
-Color getTileColorOnline(int index, int? selectedPiece, int? diceRoll, int? currentPlayer, int localPlayerNumber) {
+Color getTileColorOnline(
+  int index,
+  int? selectedPiece,
+  int? diceRoll,
+  int? currentPlayer,
+  int localPlayerNumber,
+) {
   if (currentPlayer != localPlayerNumber) {
     if (index == 15) return Colors.green;
     if (index == 25) return Colors.yellow;
@@ -31,13 +37,11 @@ Color getTileColorOnline(int index, int? selectedPiece, int? diceRoll, int? curr
     return Colors.brown.shade300;
   }
 
-  if (index == selectedPiece)
-    return Colors.redAccent;
+  if (index == selectedPiece) return Colors.redAccent;
 
   if (selectedPiece != null && diceRoll != null) {
     int newPosition = calculateNewPosition(selectedPiece, diceRoll);
-    if (index == newPosition)
-      return Colors.deepPurpleAccent;
+    if (index == newPosition) return Colors.deepPurpleAccent;
   }
 
   if (index == 15) return Colors.green;
@@ -47,7 +51,6 @@ Color getTileColorOnline(int index, int? selectedPiece, int? diceRoll, int? curr
 
   return Colors.brown.shade300;
 }
-
 
 Widget getPiece(int? player) {
   if (player == 1) {

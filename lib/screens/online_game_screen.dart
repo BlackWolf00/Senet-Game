@@ -25,13 +25,16 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ValueNotifier<bool> _pulse = ValueNotifier(false);
 
-  void selectPiece(int index, List board, int? currentPlayer, DocumentReference gameDoc) async {
+  void selectPiece(
+    int index,
+    List board,
+    int? currentPlayer,
+    DocumentReference gameDoc,
+  ) async {
     if (currentPlayer != widget.localPlayerNumber) return;
     if (board[index] != widget.localPlayerNumber) return;
 
-    await gameDoc.update({
-      'selectedPiece': index,
-    });
+    await gameDoc.update({'selectedPiece': index});
   }
 
   @override
@@ -43,7 +46,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gameDoc = FirebaseFirestore.instance.collection('games').doc(widget.gameId);
+    final gameDoc = FirebaseFirestore.instance
+        .collection('games')
+        .doc(widget.gameId);
 
     return StreamBuilder<DocumentSnapshot>(
       stream: gameDoc.snapshots(),
@@ -98,7 +103,10 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         void rollDice() async {
           if (currentPlayer != widget.localPlayerNumber || !canRollDice) return;
 
-          final roll = List.generate(4, (_) => DateTime.now().millisecondsSinceEpoch % 2).reduce((a, b) => a + b);
+          final roll = List.generate(
+            4,
+            (_) => DateTime.now().millisecondsSinceEpoch % 2,
+          ).reduce((a, b) => a + b);
           final result = roll == 0 ? 5 : roll;
 
           bool possibleMove = hasPossibleMove(board, currentPlayer, result);
@@ -120,7 +128,10 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         }
 
         void movePieceOnline() async {
-          if (selected == null || diceRoll == null || currentPlayer != widget.localPlayerNumber) return;
+          if (selected == null ||
+              diceRoll == null ||
+              currentPlayer != widget.localPlayerNumber)
+            return;
 
           int from = selected;
           int to = calculateNewPosition(from, diceRoll);
@@ -133,7 +144,8 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
           // Se il giocatore arriva alla fine (casella 30)
           if (to == 30) {
-            final scoreKey = widget.localPlayerNumber == 1 ? 'player1Score' : 'player2Score';
+            final scoreKey =
+                widget.localPlayerNumber == 1 ? 'player1Score' : 'player2Score';
             int playerScore = (data[scoreKey] ?? 0) + 1;
             int? winner = playerScore == 5 ? widget.localPlayerNumber : null;
 
@@ -159,11 +171,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           bool canMove = false;
 
           if (occupyingPlayer == null) {
-            canMove = !isBlockedByThreeGroup(from, to, board, currentPlayer) &&
+            canMove =
+                !isBlockedByThreeGroup(from, to, board, currentPlayer) &&
                 checkHouseOfHappinessRule(from, to) &&
                 canExitFromSpecialHouse(from, diceRoll);
           } else if (occupyingPlayer != currentPlayer) {
-            canMove = !isProtectedFromSwap(to, board) &&
+            canMove =
+                !isProtectedFromSwap(to, board) &&
                 !isBlockedByThreeGroup(from, to, board, currentPlayer) &&
                 checkHouseOfHappinessRule(from, to) &&
                 canExitFromSpecialHouse(from, diceRoll);
@@ -237,12 +251,20 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                     children: [
                       Text(
                         'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text(
                         "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       SizedBox(height: 4),
                       ValueListenableBuilder<bool>(
@@ -254,11 +276,15 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                             onEnd: () => _pulse.value = false,
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 12),
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 16,
+                              ),
                               decoration: BoxDecoration(
-                                color: (currentPlayer == widget.localPlayerNumber)
-                                    ? Colors.green.withOpacity(0.7)
-                                    : Colors.orange.withOpacity(0.7),
+                                color:
+                                    (currentPlayer == widget.localPlayerNumber)
+                                        ? Colors.green.withOpacity(0.7)
+                                        : Colors.orange.withOpacity(0.7),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -276,7 +302,10 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                         ? "È il tuo turno!"
                                         : "In attesa dell’avversario...",
                                     style: const TextStyle(
-                                        color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -293,11 +322,23 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                         itemCount: 30,
                         itemBuilder: (context, index) {
                           return GestureDetector(
-                            onTap: () => selectPiece(index, board, currentPlayer, gameDoc),
+                            onTap:
+                                () => selectPiece(
+                                  index,
+                                  board,
+                                  currentPlayer,
+                                  gameDoc,
+                                ),
                             child: Container(
                               margin: EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: getTileColorOnline(index, selected, diceRoll, currentPlayer, widget.localPlayerNumber),
+                                color: getTileColorOnline(
+                                  index,
+                                  selected,
+                                  diceRoll,
+                                  currentPlayer,
+                                  widget.localPlayerNumber,
+                                ),
                                 border: Border.all(color: Colors.white),
                               ),
                               child: Center(child: getPiece(board[index])),
@@ -307,27 +348,37 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                       ),
                       SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: (canRollDice && currentPlayer == widget.localPlayerNumber)
-                            ? rollDice
-                            : null,
+                        onPressed:
+                            (canRollDice &&
+                                    currentPlayer == widget.localPlayerNumber)
+                                ? rollDice
+                                : null,
                         child: Text('Lancia i bastoncini'),
                       ),
                       SizedBox(height: 8),
                       Text(
                         'Risultato: ${diceRoll ?? ""}',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       SizedBox(height: 8),
                       ElevatedButton(
-                        onPressed: (selected != null && currentPlayer == widget.localPlayerNumber)
-                            ? () => movePieceOnline()
-                            : null,
+                        onPressed:
+                            (selected != null &&
+                                    currentPlayer == widget.localPlayerNumber)
+                                ? () => movePieceOnline()
+                                : null,
                         child: Text('Muovi pezzo'),
                       ),
                       SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: resetGame,
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                        ),
                         child: Text("Resetta Partita"),
                       ),
                     ],

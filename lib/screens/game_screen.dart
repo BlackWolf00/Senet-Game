@@ -49,7 +49,10 @@ class _GameScreenState extends State<GameScreen> {
 
   void rollDice() {
     if (!canRollDice) return;
-    int count = List.generate(4, (_) => Random().nextBool() ? 1 : 0).reduce((a, b) => a + b);
+    int count = List.generate(
+      4,
+      (_) => Random().nextBool() ? 1 : 0,
+    ).reduce((a, b) => a + b);
     setState(() {
       diceRoll = (count == 0) ? 5 : count;
       canRollDice = false;
@@ -83,7 +86,7 @@ class _GameScreenState extends State<GameScreen> {
   int selectAIMove(List<int> validMoves) {
     if (widget.aiDifficulty == AIDifficulty.medium) {
       return validMoves.firstWhere(
-            (i) => calculateNewPosition(i, diceRoll!) == 30,
+        (i) => calculateNewPosition(i, diceRoll!) == 30,
         orElse: () => validMoves[Random().nextInt(validMoves.length)],
       );
     }
@@ -145,13 +148,23 @@ class _GameScreenState extends State<GameScreen> {
       if (newPosition < 30) {
         int? occupyingPlayer = board[newPosition];
         if ((occupyingPlayer == null &&
-            !isBlockedByThreeGroup(selectedPiece!, newPosition, board, currentPlayer) &&
-            checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
-            canExitFromSpecialHouse(selectedPiece!, diceRoll!)) ||
+                !isBlockedByThreeGroup(
+                  selectedPiece!,
+                  newPosition,
+                  board,
+                  currentPlayer,
+                ) &&
+                checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
+                canExitFromSpecialHouse(selectedPiece!, diceRoll!)) ||
             (occupyingPlayer != null &&
                 occupyingPlayer != currentPlayer &&
                 !isProtectedFromSwap(newPosition, board) &&
-                !isBlockedByThreeGroup(selectedPiece!, newPosition, board, currentPlayer) &&
+                !isBlockedByThreeGroup(
+                  selectedPiece!,
+                  newPosition,
+                  board,
+                  currentPlayer,
+                ) &&
                 checkHouseOfHappinessRule(selectedPiece!, newPosition) &&
                 canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
           setState(() {
@@ -162,7 +175,7 @@ class _GameScreenState extends State<GameScreen> {
                 board[newPosition] = actualPlayer;
                 board[selectedPiece!] = null;
                 int newPositionByHouseOfWaterRule =
-                findFirstAvailableBackwardPosition(board);
+                    findFirstAvailableBackwardPosition(board);
                 board[26] = null;
                 board[newPositionByHouseOfWaterRule] = occupyingPlayer;
               } else {
@@ -222,12 +235,20 @@ class _GameScreenState extends State<GameScreen> {
                 children: [
                   Text(
                     'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(height: 8),
                   Text(
                     "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(height: 16),
                   ValueListenableBuilder<bool>(
@@ -239,13 +260,17 @@ class _GameScreenState extends State<GameScreen> {
                         onEnd: () => _pulse.value = false,
                         child: Container(
                           margin: EdgeInsets.symmetric(vertical: 12),
-                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
-                            color: widget.vsAI && currentPlayer == 2
-                                ? Colors.indigo.withOpacity(0.7)
-                                : currentPlayer == 1
-                                ? Colors.red.withOpacity(0.7)
-                                : Colors.black.withOpacity(0.7),
+                            color:
+                                widget.vsAI && currentPlayer == 2
+                                    ? Colors.indigo.withOpacity(0.7)
+                                    : currentPlayer == 1
+                                    ? Colors.red.withOpacity(0.7)
+                                    : Colors.black.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -266,7 +291,11 @@ class _GameScreenState extends State<GameScreen> {
                                     : currentPlayer == 1
                                     ? "Turno del Giocatore 1"
                                     : "Turno del Giocatore 2",
-                                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -303,7 +332,11 @@ class _GameScreenState extends State<GameScreen> {
                   SizedBox(height: 8),
                   Text(
                     'Risultato: ${diceRoll ?? ""}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(height: 8),
                   ElevatedButton(
@@ -314,7 +347,9 @@ class _GameScreenState extends State<GameScreen> {
                   ElevatedButton(
                     onPressed: resetGame,
                     child: Text("Resetta Partita"),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
                   ),
                 ],
               ),

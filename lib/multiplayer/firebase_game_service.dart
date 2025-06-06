@@ -26,6 +26,8 @@ Future<String> createOnlineGame() async {
     'lastUpdated': FieldValue.serverTimestamp(),
   };
 
-  final gameDoc = await FirebaseFirestore.instance.collection('games').add(newGame);
+  final gameDoc = await FirebaseFirestore.instance
+      .collection('games')
+      .add(newGame);
   return gameDoc.id;
 }

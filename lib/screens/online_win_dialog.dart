@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import '../multiplayer/firebase_game_service.dart';
 import '../multiplayer/game_lobby_page.dart';
 
-void showOnlineWinDialog(
-    BuildContext context,
-    int winningPlayer
-    ) {
+void showOnlineWinDialog(BuildContext context, int winningPlayer) {
   showDialog(
     context: context,
     barrierDismissible: false,

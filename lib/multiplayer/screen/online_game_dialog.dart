@@ -18,66 +18,75 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Multiplayer Online', textAlign: TextAlign.center,),
-      content: isLoading ? Center(
-        heightFactor: 1.5,
-        child: CircularProgressIndicator()) : Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              setState(() => isLoading = true);
-              final gameId = await createOnlineGame();
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => GameLobbyPage(gameId: gameId),
-                ),
-              );
-            },
-            child: Text('Crea nuova partita'),
-          ),
-          SizedBox(height: 10),
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'ID partita',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) => gameId = value.trim(),
-          ),
-          SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: /*(gameId.isEmpty) ? null :*/ () async {
-              if (gameId.isNotEmpty) {
-                setState(() => isLoading = true);
-                final gameRef = FirebaseFirestore.instance.collection('games').doc(gameId);
-                final doc = await gameRef.get();
-                final uid = FirebaseAuth.instance.currentUser?.uid;
-                if (doc.exists && uid != null) {
-                  final data = doc.data()!;
-                  if (data['player2'] == null && data['player1'] != uid) {
-                    await gameRef.update({'player2': uid, 'status': 'active'});
-                  }
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => GameLobbyPage(gameId: gameId),
+      title: Text('Multiplayer Online', textAlign: TextAlign.center),
+      content:
+          isLoading
+              ? Center(heightFactor: 1.5, child: CircularProgressIndicator())
+              : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() => isLoading = true);
+                      final gameId = await createOnlineGame();
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => GameLobbyPage(gameId: gameId),
+                        ),
+                      );
+                    },
+                    child: Text('Crea nuova partita'),
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'ID partita',
+                      border: OutlineInputBorder(),
                     ),
-                  );
-                } else {
-                  setState(() => isLoading = true);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Partita non trovata o già piena.')),
-                  );
-                }
-              }
-            },
-            child: Text('Unisciti a una partita'),
-          ),
-        ],
-      ),
+                    onChanged: (value) => gameId = value.trim(),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: /*(gameId.isEmpty) ? null :*/ () async {
+                      if (gameId.isNotEmpty) {
+                        setState(() => isLoading = true);
+                        final gameRef = FirebaseFirestore.instance
+                            .collection('games')
+                            .doc(gameId);
+                        final doc = await gameRef.get();
+                        final uid = FirebaseAuth.instance.currentUser?.uid;
+                        if (doc.exists && uid != null) {
+                          final data = doc.data()!;
+                          if (data['player2'] == null &&
+                              data['player1'] != uid) {
+                            await gameRef.update({
+                              'player2': uid,
+                              'status': 'active',
+                            });
+                          }
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => GameLobbyPage(gameId: gameId),
+                            ),
+                          );
+                        } else {
+                          setState(() => isLoading = true);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Partita non trovata o già piena.'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Text('Unisciti a una partita'),
+                  ),
+                ],
+              ),
     );
   }
 }

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '../screens/login_page.dart';
 
 class SignUpPage extends StatefulWidget {
-  static route() => MaterialPageRoute(
-    builder: (context) => const SignUpPage(),
-  );
+  static route() => MaterialPageRoute(builder: (context) => const SignUpPage());
+
   const SignUpPage({super.key});
 
   @override
@@ -26,11 +25,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      final userCredential =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
       print(userCredential.user?.uid);
     } on FirebaseAuthException catch (e) {
       print(e.message);
@@ -49,25 +48,18 @@ class _SignUpPageState extends State<SignUpPage> {
             children: [
               const Text(
                 'Sign Up.',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               const SizedBox(height: 20),
               TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                ),
+                decoration: const InputDecoration(hintText: 'Email'),
               ),
               const SizedBox(height: 15),
               TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(
-                  hintText: 'Password',
-                ),
+                decoration: const InputDecoration(hintText: 'Password'),
                 obscureText: true,
               ),
               const SizedBox(height: 20),
@@ -77,10 +69,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 },
                 child: const Text(
                   'SIGN UP',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 20),
@@ -95,10 +84,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       TextSpan(
                         text: 'Sign In',
-                        style:
-                        Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
