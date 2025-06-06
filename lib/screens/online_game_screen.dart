@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../screens/online_win_dialog.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
@@ -20,6 +21,9 @@ class OnlineGameScreen extends StatefulWidget {
 
 class _OnlineGameScreenState extends State<OnlineGameScreen> {
   bool hasShownDialog = false;
+  int? _previousPlayer;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final ValueNotifier<bool> _pulse = ValueNotifier(false);
 
   void selectPiece(int index, List board, int? currentPlayer, DocumentReference gameDoc) async {
     if (currentPlayer != widget.localPlayerNumber) return;
@@ -28,6 +32,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     await gameDoc.update({
       'selectedPiece': index,
     });
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    _pulse.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,6 +60,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         int? currentPlayer = data['currentPlayer'];
         int? diceRoll = data['diceRoll'];
         int? winner = data['winner'];
+        if (_previousPlayer != null &&
+            _previousPlayer != currentPlayer &&
+            currentPlayer == widget.localPlayerNumber) {
+          _audioPlayer.play(AssetSource('sounds/turn.mp3'));
+          _pulse.value = true;
+        }
+        _previousPlayer = currentPlayer;
         if (winner != null && !hasShownDialog) {
           hasShownDialog = true;
           Future.microtask(() {
@@ -227,31 +245,44 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       SizedBox(height: 4),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 12),
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: (currentPlayer == widget.localPlayerNumber)
-                              ? Colors.green.withOpacity(0.7)
-                              : Colors.orange.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              currentPlayer == widget.localPlayerNumber ? Icons.check_circle : Icons.hourglass_top,
-                              color: Colors.white,
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _pulse,
+                        builder: (context, pulse, child) {
+                          return AnimatedScale(
+                            scale: pulse ? 1.1 : 1.0,
+                            duration: const Duration(milliseconds: 250),
+                            onEnd: () => _pulse.value = false,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: (currentPlayer == widget.localPlayerNumber)
+                                    ? Colors.green.withOpacity(0.7)
+                                    : Colors.orange.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    currentPlayer == widget.localPlayerNumber
+                                        ? Icons.check_circle
+                                        : Icons.hourglass_top,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    currentPlayer == widget.localPlayerNumber
+                                        ? "È il tuo turno!"
+                                        : "In attesa dell’avversario...",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
                             ),
-                            SizedBox(width: 8),
-                            Text(
-                              currentPlayer == widget.localPlayerNumber
-                                  ? "È il tuo turno!"
-                                  : "In attesa dell’avversario...",
-                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
                       GridView.builder(
                         shrinkWrap: true,
