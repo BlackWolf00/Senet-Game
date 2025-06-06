@@ -226,7 +226,33 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                         "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
-                      SizedBox(height: 16),
+                      SizedBox(height: 4),
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 12),
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: (currentPlayer == widget.localPlayerNumber)
+                              ? Colors.green.withOpacity(0.7)
+                              : Colors.orange.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              currentPlayer == widget.localPlayerNumber ? Icons.check_circle : Icons.hourglass_top,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              currentPlayer == widget.localPlayerNumber
+                                  ? "È il tuo turno!"
+                                  : "In attesa dell’avversario...",
+                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
                       GridView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
