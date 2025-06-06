@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 import '../screens/win_dialog.dart';
 import '../utils/ai_difficulty.dart';
+import '../utils/audio.dart';
 
 class GameScreen extends StatefulWidget {
   final bool vsAI;
@@ -23,6 +25,8 @@ class _GameScreenState extends State<GameScreen> {
   bool canRollDice = true;
   int player1Score = 0;
   int player2Score = 0;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  final ValueNotifier<bool> _pulse = ValueNotifier(false);
 
   @override
   void initState() {
@@ -56,7 +60,9 @@ class _GameScreenState extends State<GameScreen> {
         diceRoll = null; // Resetta il lancio
         canRollDice = true;
         currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
+        _pulse.value = true;
       });
+      playTurnSound(_audioPlayer);
       if (widget.vsAI && currentPlayer == 2) aiPlay();
     }
   }
@@ -127,13 +133,13 @@ class _GameScreenState extends State<GameScreen> {
           selectedPiece = null;
           diceRoll = null;
           if (player1Score == 5 || player2Score == 5) {
-            print("testo");
-            print("Giocatore ${player1Score == 5 ? 1 : 2} ha vinto!");
             showWinDialog(context, player1Score == 5 ? 1 : 2, resetGame);
           }
           currentPlayer = (currentPlayer == 1) ? 2 : 1;
+          _pulse.value = true;
           canRollDice = true;
         });
+        playTurnSound(_audioPlayer);
       }
 
       if (newPosition < 30) {
@@ -171,8 +177,10 @@ class _GameScreenState extends State<GameScreen> {
             selectedPiece = null;
             diceRoll = null;
             currentPlayer = (currentPlayer == 1) ? 2 : 1;
+            _pulse.value = true;
             canRollDice = true;
           });
+          playTurnSound(_audioPlayer);
           if (widget.vsAI && currentPlayer == 2) aiPlay();
         }
       }
@@ -222,39 +230,49 @@ class _GameScreenState extends State<GameScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 12),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: widget.vsAI && currentPlayer == 2
-                          ? Colors.indigo.withOpacity(0.7)
-                          : currentPlayer == 1
-                          ? Colors.red.withOpacity(0.7)
-                          : Colors.black.withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          widget.vsAI && currentPlayer == 2
-                              ? Icons.smart_toy
-                              : currentPlayer == 1
-                              ? Icons.person
-                              : Icons.person_outline,
-                          color: Colors.white,
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _pulse,
+                    builder: (context, pulse, child) {
+                      return AnimatedScale(
+                        scale: pulse ? 1.1 : 1.0,
+                        duration: Duration(milliseconds: 250),
+                        onEnd: () => _pulse.value = false,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: widget.vsAI && currentPlayer == 2
+                                ? Colors.indigo.withOpacity(0.7)
+                                : currentPlayer == 1
+                                ? Colors.red.withOpacity(0.7)
+                                : Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                widget.vsAI && currentPlayer == 2
+                                    ? Icons.smart_toy
+                                    : currentPlayer == 1
+                                    ? Icons.person
+                                    : Icons.person_outline,
+                                color: Colors.white,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                widget.vsAI && currentPlayer == 2
+                                    ? "Turno dell'IA"
+                                    : currentPlayer == 1
+                                    ? "Turno del Giocatore 1"
+                                    : "Turno del Giocatore 2",
+                                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          widget.vsAI && currentPlayer == 2
-                              ? "Turno dell'IA"
-                              : currentPlayer == 1
-                              ? "Turno del Giocatore 1"
-                              : "Turno del Giocatore 2",
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                   GridView.builder(
                     shrinkWrap: true,
