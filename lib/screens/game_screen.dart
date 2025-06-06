@@ -222,6 +222,40 @@ class _GameScreenState extends State<GameScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   SizedBox(height: 16),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: widget.vsAI && currentPlayer == 2
+                          ? Colors.indigo.withOpacity(0.7)
+                          : currentPlayer == 1
+                          ? Colors.red.withOpacity(0.7)
+                          : Colors.black.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.vsAI && currentPlayer == 2
+                              ? Icons.smart_toy
+                              : currentPlayer == 1
+                              ? Icons.person
+                              : Icons.person_outline,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          widget.vsAI && currentPlayer == 2
+                              ? "Turno dell'IA"
+                              : currentPlayer == 1
+                              ? "Turno del Giocatore 1"
+                              : "Turno del Giocatore 2",
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
                   GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
