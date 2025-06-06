@@ -187,12 +187,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(title: Text('Senet - ID partita: ${widget.gameId}'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.home),
-              onPressed: () {
-                Navigator.pop(context);
+          appBar: AppBar(
+            title: Text('Senet - ID partita: ${widget.gameId}'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.home),
+                onPressed: () {
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -204,54 +205,78 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            child: Column(
-              children: [
-                Text(
-                  'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                GridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 10,
+            child: Center(
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  itemCount: 30,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => selectPiece(index, board, currentPlayer, gameDoc),
-                      child: Container(
-                        margin: EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: getTileColorOnline(index, selected, diceRoll, currentPlayer, widget.localPlayerNumber),
-                          border: Border.all(color: Colors.black),
-                        ),
-                        child: Center(child: getPiece(board[index])),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
-                    );
-                  },
+                      SizedBox(height: 8),
+                      Text(
+                        "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 16),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 10,
+                        ),
+                        itemCount: 30,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () => selectPiece(index, board, currentPlayer, gameDoc),
+                            child: Container(
+                              margin: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: getTileColorOnline(index, selected, diceRoll, currentPlayer, widget.localPlayerNumber),
+                                border: Border.all(color: Colors.white),
+                              ),
+                              child: Center(child: getPiece(board[index])),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: (canRollDice && currentPlayer == widget.localPlayerNumber)
+                            ? rollDice
+                            : null,
+                        child: Text('Lancia i bastoncini'),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Risultato: ${diceRoll ?? ""}',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: (selected != null && currentPlayer == widget.localPlayerNumber)
+                            ? () => movePieceOnline()
+                            : null,
+                        child: Text('Muovi pezzo'),
+                      ),
+                      SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: resetGame,
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                        child: Text("Resetta Partita"),
+                      ),
+                    ],
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: (canRollDice && currentPlayer == widget.localPlayerNumber)
-                      ? rollDice
-                      : null,
-                  child: Text('Lancia i bastoncini'),
-                ),
-                Text('Risultato: ${diceRoll ?? ""}'),
-                ElevatedButton(
-                  onPressed: (selected != null && currentPlayer == widget.localPlayerNumber)
-                      ? () => movePieceOnline()
-                      : null,
-                  child: Text('Muovi pezzo'),
-                ),
-                ElevatedButton(
-                  onPressed: resetGame,
-                  child: Text("Resetta Partita"),
-                ),
-              ],
+              ),
             ),
           ),
         );
