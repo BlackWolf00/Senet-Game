@@ -13,18 +13,22 @@ class OnlineGameDialog extends StatefulWidget {
 
 class _OnlineGameDialogState extends State<OnlineGameDialog> {
   String gameId = '';
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Multiplayer Online'),
-      content: Column(
+      title: Text('Multiplayer Online', textAlign: TextAlign.center,),
+      content: isLoading ? Center(
+        heightFactor: 1.5,
+        child: CircularProgressIndicator()) : Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              setState(() => isLoading = true);
               final gameId = await createOnlineGame();
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -44,9 +48,9 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
           ),
           SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: /*(gameId.isEmpty) ? null :*/ () async {
               if (gameId.isNotEmpty) {
-                Navigator.pop(context);
+                setState(() => isLoading = true);
                 final gameRef = FirebaseFirestore.instance.collection('games').doc(gameId);
                 final doc = await gameRef.get();
                 final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -55,6 +59,7 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
                   if (data['player2'] == null && data['player1'] != uid) {
                     await gameRef.update({'player2': uid, 'status': 'active'});
                   }
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -62,6 +67,7 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
                     ),
                   );
                 } else {
+                  setState(() => isLoading = true);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Partita non trovata o già piena.')),
                   );
