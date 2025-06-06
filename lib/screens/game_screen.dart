@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:vibration/vibration.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 import '../screens/win_dialog.dart';
@@ -47,7 +48,7 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
-  void rollDice() {
+  void rollDice() async {
     if (!canRollDice) return;
     int count = List.generate(
       4,
@@ -66,6 +67,9 @@ class _GameScreenState extends State<GameScreen> {
         _pulse.value = true;
       });
       playTurnSound(_audioPlayer);
+      if (await Vibration.hasAmplitudeControl()) {
+        Vibration.vibrate(amplitude: 128);
+      }
       if (widget.vsAI && currentPlayer == 2) aiPlay();
     }
   }
@@ -116,7 +120,7 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  void movePiece() {
+  void movePiece() async {
     if (selectedPiece != null && diceRoll != null) {
       int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
 
@@ -143,6 +147,9 @@ class _GameScreenState extends State<GameScreen> {
           canRollDice = true;
         });
         playTurnSound(_audioPlayer);
+        if (await Vibration.hasAmplitudeControl()) {
+          Vibration.vibrate(amplitude: 128);
+        }
       }
 
       if (newPosition < 30) {
@@ -194,6 +201,9 @@ class _GameScreenState extends State<GameScreen> {
             canRollDice = true;
           });
           playTurnSound(_audioPlayer);
+          if (await Vibration.hasAmplitudeControl()) {
+            Vibration.vibrate(amplitude: 128);
+          }
           if (widget.vsAI && currentPlayer == 2) aiPlay();
         }
       }

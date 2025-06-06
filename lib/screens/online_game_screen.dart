@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:vibration/vibration.dart';
 import '../screens/online_win_dialog.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
@@ -70,6 +71,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             currentPlayer == widget.localPlayerNumber) {
           _audioPlayer.play(AssetSource('sounds/turn.mp3'));
           _pulse.value = true;
+          if (await Vibration.hasAmplitudeControl()) {
+            Vibration.vibrate(amplitude: 128);
+          }
         }
         _previousPlayer = currentPlayer;
         if (winner != null && !hasShownDialog) {
