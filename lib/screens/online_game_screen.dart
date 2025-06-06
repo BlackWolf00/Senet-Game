@@ -71,9 +71,13 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             currentPlayer == widget.localPlayerNumber) {
           _audioPlayer.play(AssetSource('sounds/turn.mp3'));
           _pulse.value = true;
-          if (await Vibration.hasAmplitudeControl()) {
-            Vibration.vibrate(amplitude: 128);
-          }
+          Future.microtask(() async {
+            await _audioPlayer.play(AssetSource('sounds/turn.mp3'));
+            _pulse.value = true;
+            if (await Vibration.hasVibrator() ?? false) {
+              Vibration.vibrate(duration: 100);
+            }
+          });
         }
         _previousPlayer = currentPlayer;
         if (winner != null && !hasShownDialog) {
