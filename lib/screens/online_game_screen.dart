@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -23,6 +24,8 @@ class OnlineGameScreen extends StatefulWidget {
 class _OnlineGameScreenState extends State<OnlineGameScreen> {
   bool hasShownDialog = false;
   int? _previousPlayer;
+  String? shownEmoji;
+  Timer? _emojiTimer;
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ValueNotifier<bool> _pulse = ValueNotifier(false);
 
@@ -43,6 +46,17 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
     _audioPlayer.dispose();
     _pulse.dispose();
     super.dispose();
+  }
+
+  void sendEmoji(String emoji) async {
+    await FirebaseFirestore.instance
+        .collection('games')
+        .doc(widget.gameId)
+        .update({
+          'lastEmoji': emoji,
+          'lastEmojiSender': widget.localPlayerNumber,
+          'lastEmojiTimestamp': FieldValue.serverTimestamp(),
+        });
   }
 
   @override
@@ -90,6 +104,33 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         int? selected = data['selectedPiece'];
         int player1Score = data['player1Score'] ?? 0;
         int player2Score = data['player2Score'] ?? 0;
+        final String? receivedEmoji = data['lastEmoji'];
+        final int? sender = data['lastEmojiSender'];
+        final Timestamp? emojiTime = data['lastEmojiTimestamp'];
+
+        if (receivedEmoji != null &&
+            sender != widget.localPlayerNumber &&
+            (shownEmoji == null || shownEmoji != receivedEmoji)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            setState(() {
+              shownEmoji = receivedEmoji;
+            });
+            _emojiTimer?.cancel();
+            _emojiTimer = Timer(Duration(seconds: 5), () async {
+              if (mounted) {
+                setState(() {
+                  shownEmoji = null;
+                });
+              }
+              await gameDoc.update({
+                "lastEmoji": null,
+                "lastEmojiSender": null,
+                "lastEmojiTimestamp": FieldValue.serverTimestamp(),
+              });
+            });
+          });
+        }
 
         void resetGame() async {
           List<dynamic> newBoard = List.filled(30, null);
@@ -105,6 +146,9 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             'player2Score': 0,
             'winner': null,
             'lastUpdated': FieldValue.serverTimestamp(),
+            "lastEmoji": null,
+            "lastEmojiSender": null,
+            "lastEmojiTimestamp": FieldValue.serverTimestamp(),
           });
         }
 
@@ -238,162 +282,217 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
               ),
             ],
           ),
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('images/sfondo.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Container(
-                  margin: EdgeInsets.all(16),
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(16),
+          body: Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/sfondo.jpg'),
+                    fit: BoxFit.cover,
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                ),
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      margin: EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      SizedBox(height: 8),
-                      Text(
-                        "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: _pulse,
-                        builder: (context, pulse, child) {
-                          return AnimatedScale(
-                            scale: pulse ? 1.1 : 1.0,
-                            duration: const Duration(milliseconds: 250),
-                            onEnd: () => _pulse.value = false,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 12),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    (currentPlayer == widget.localPlayerNumber)
-                                        ? Colors.green.withOpacity(0.7)
-                                        : Colors.orange.withOpacity(0.7),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    currentPlayer == widget.localPlayerNumber
-                                        ? Icons.check_circle
-                                        : Icons.hourglass_top,
-                                    color: Colors.white,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _pulse,
+                            builder: (context, pulse, child) {
+                              return AnimatedScale(
+                                scale: pulse ? 1.1 : 1.0,
+                                duration: const Duration(milliseconds: 250),
+                                onEnd: () => _pulse.value = false,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 12,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    currentPlayer == widget.localPlayerNumber
-                                        ? "È il tuo turno!"
-                                        : "In attesa dell’avversario...",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        (currentPlayer ==
+                                                widget.localPlayerNumber)
+                                            ? Colors.green.withOpacity(0.7)
+                                            : Colors.orange.withOpacity(0.7),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        currentPlayer ==
+                                                widget.localPlayerNumber
+                                            ? Icons.check_circle
+                                            : Icons.hourglass_top,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        currentPlayer ==
+                                                widget.localPlayerNumber
+                                            ? "È il tuo turno!"
+                                            : "In attesa dell’avversario...",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 10,
+                                ),
+                            itemCount: 30,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap:
+                                    () => selectPiece(
+                                      index,
+                                      board,
+                                      currentPlayer,
+                                      gameDoc,
                                     ),
+                                child: Container(
+                                  margin: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: getTileColorOnline(
+                                      index,
+                                      selected,
+                                      diceRoll,
+                                      currentPlayer,
+                                      widget.localPlayerNumber,
+                                    ),
+                                    border: Border.all(color: Colors.white),
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 10,
-                        ),
-                        itemCount: 30,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap:
-                                () => selectPiece(
-                                  index,
-                                  board,
-                                  currentPlayer,
-                                  gameDoc,
+                                  child: Center(child: getPiece(board[index])),
                                 ),
-                            child: Container(
-                              margin: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: getTileColorOnline(
-                                  index,
-                                  selected,
-                                  diceRoll,
-                                  currentPlayer,
-                                  widget.localPlayerNumber,
-                                ),
-                                border: Border.all(color: Colors.white),
-                              ),
-                              child: Center(child: getPiece(board[index])),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed:
+                                (canRollDice &&
+                                        currentPlayer ==
+                                            widget.localPlayerNumber)
+                                    ? rollDice
+                                    : null,
+                            child: Text('Lancia i bastoncini'),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Risultato: ${diceRoll ?? ""}',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                          );
-                        },
+                          ),
+                          SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed:
+                                (selected != null &&
+                                        currentPlayer ==
+                                            widget.localPlayerNumber)
+                                    ? () => movePieceOnline()
+                                    : null,
+                            child: Text('Muovi pezzo'),
+                          ),
+                          SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: resetGame,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                            ),
+                            child: Text("Resetta Partita"),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Text(
+                                  '😄',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                                onPressed: () => sendEmoji('😄'),
+                              ),
+                              IconButton(
+                                icon: Text(
+                                  '😡',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                                onPressed: () => sendEmoji('😡'),
+                              ),
+                              IconButton(
+                                icon: Text(
+                                  '👋',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                                onPressed: () => sendEmoji('👋'),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed:
-                            (canRollDice &&
-                                    currentPlayer == widget.localPlayerNumber)
-                                ? rollDice
-                                : null,
-                        child: Text('Lancia i bastoncini'),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Risultato: ${diceRoll ?? ""}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed:
-                            (selected != null &&
-                                    currentPlayer == widget.localPlayerNumber)
-                                ? () => movePieceOnline()
-                                : null,
-                        child: Text('Muovi pezzo'),
-                      ),
-                      SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: resetGame,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                        ),
-                        child: Text("Resetta Partita"),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              if (shownEmoji != null)
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: AnimatedOpacity(
+                    duration: Duration(milliseconds: 500),
+                    opacity: 1.0,
+                    child: Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(shownEmoji!, style: TextStyle(fontSize: 36)),
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },

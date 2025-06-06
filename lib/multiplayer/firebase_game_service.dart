@@ -24,6 +24,9 @@ Future<String> createOnlineGame() async {
     'lastMove': null,
     'createdAt': FieldValue.serverTimestamp(),
     'lastUpdated': FieldValue.serverTimestamp(),
+    "lastEmoji": null,
+    "lastEmojiSender": null,
+    "lastEmojiTimestamp": FieldValue.serverTimestamp(),
   };
 
   final gameDoc = await FirebaseFirestore.instance
