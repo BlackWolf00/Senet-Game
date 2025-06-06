@@ -94,11 +94,6 @@ import 'dart:math';
     return isProtectedBySpecialHouse(index);
   }
 
-  // TODO: DA ELIMINARE
-  bool isExposed(int pos, board) {
-    return pos < 29 && board[pos + 1] != 2 && board[pos + 2] != 2;
-  }
-
   bool hasPossibleMove(board, currentPlayer, diceRoll) {
     for (int i = 0; i < board.length; i++) {
       if (board[i] == currentPlayer) {

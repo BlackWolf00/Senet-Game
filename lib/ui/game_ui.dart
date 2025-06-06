@@ -8,14 +8,10 @@ void initializeBoard(board) {
 }
 
 Color getTileColor(int index, selectedPiece, diceRoll) {
-  print(index);
-  print(selectedPiece);
-  print(diceRoll);
   if (index == selectedPiece)
     return Colors.redAccent; // Evidenzia la pedina selezionata
   if (selectedPiece != null && diceRoll != null) {
     int newPosition = calculateNewPosition(selectedPiece!, diceRoll!);
-    print(newPosition);
     if (index == newPosition)
       return Colors.deepPurpleAccent; // Evidenzia dove andrà la pedina
   }
