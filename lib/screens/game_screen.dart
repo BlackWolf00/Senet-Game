@@ -364,7 +364,8 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   SizedBox(height: 8),
                   ElevatedButton(
-                    onPressed: movePiece,
+                    onPressed:
+                        !(widget.vsAI && currentPlayer == 2) ? movePiece : null,
                     child: Text('Muovi pezzo'),
                   ),
                   SizedBox(height: 8),
