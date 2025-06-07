@@ -150,15 +150,15 @@ bool isBlockedByThreeGroup(int start, int end, board, currentPlayer) {
   return false;
 }
 
-List<int> getValidAIMoves(board, diceRoll) {
+List<int> getValidMoves(board, diceRoll, player) {
   List<int> valid = [];
   for (int i = 0; i < board.length; i++) {
-    if (board[i] == 2) {
+    if (board[i] == player) {
       int dest = calculateNewPosition(i, diceRoll!);
       if (dest <= 30) {
         int? target = (dest < 30) ? board[dest] : null;
         if (target == null ||
-            (target != 2 && !isProtectedFromSwap(dest, board))) {
+            (target != player && !isProtectedFromSwap(dest, board))) {
           valid.add(i);
         }
       }

@@ -99,7 +99,7 @@ class _GameScreenState extends State<GameScreen> {
     rollDice();
     await Future.delayed(Duration(milliseconds: 800));
 
-    List<int> validMoves = getValidAIMoves(board, diceRoll);
+    List<int> validMoves = getValidMoves(board, diceRoll, 2);
     if (validMoves.isEmpty) return;
 
     int choice = selectAIMove(
