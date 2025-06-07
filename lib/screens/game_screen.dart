@@ -113,30 +113,6 @@ class _GameScreenState extends State<GameScreen> {
     movePiece();
   }
 
-  int selectAIMove(List<int> validMoves) {
-    if (widget.aiDifficulty == AIDifficulty.medium) {
-      return validMoves.firstWhere(
-        (i) => calculateNewPosition(i, diceRoll!) == 30,
-        orElse: () => validMoves[Random().nextInt(validMoves.length)],
-      );
-    }
-
-    if (widget.aiDifficulty == AIDifficulty.hard) {
-      int best = validMoves.first;
-      int bestScore = -999;
-      for (int i in validMoves) {
-        int score = evaluateMove(i, board, currentPlayer, diceRoll);
-        if (score > bestScore) {
-          best = i;
-          bestScore = score;
-        }
-      }
-      return best;
-    }
-
-    return validMoves.first;
-  }
-
   void selectPiece(int index, board, currentPlayer) {
     if (widget.vsAI && currentPlayer == 2) return;
     if (board[index] == currentPlayer) {
