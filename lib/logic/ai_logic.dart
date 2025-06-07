@@ -1,5 +1,6 @@
 import 'dart:math';
 import './game_logic.dart';
+import './ai_logic_move_calculation.dart';
 import '../utils/ai_difficulty.dart';
 
 int selectAIMove(validMoves, aiDifficulty, diceRoll, board, currentPlayer) {
@@ -9,21 +10,16 @@ int selectAIMove(validMoves, aiDifficulty, diceRoll, board, currentPlayer) {
 
     case AIDifficulty.medium:
       return validMoves.firstWhere(
-        (i) => calculateNewPosition(i, diceRoll) == 30,
+            (i) => calculateNewPosition(i, diceRoll) == 30,
         orElse: () => validMoves[Random().nextInt(validMoves.length)],
       );
 
     case AIDifficulty.hard:
-      int best = validMoves.first;
-      int bestScore = -999;
-      for (int i in validMoves) {
-        int score = evaluateMove(i, board, currentPlayer, diceRoll);
-        if (score > bestScore) {
-          best = i;
-          bestScore = score;
-        }
-      }
-      return best;
+      return bestMove(validMoves, board, currentPlayer, diceRoll);
+
+    case AIDifficulty.extreme:
+      return bestMoveConsideringOpponent(validMoves, board, currentPlayer, diceRoll);
   }
+
   return validMoves.first;
 }
