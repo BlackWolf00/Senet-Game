@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/online_win_dialog.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
@@ -28,6 +29,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
   Timer? _emojiTimer;
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ValueNotifier<bool> _pulse = ValueNotifier(false);
+  final ValueNotifier<bool> isMuted = ValueNotifier(false);
 
   void selectPiece(
     int index,
@@ -76,6 +78,19 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
         final data = snapshot.data!.data() as Map<String, dynamic>;
 
+        Future.microtask(() async {
+          final prefs = await SharedPreferences.getInstance();
+          final mute = prefs.getBool('isMuted') ?? false;
+          isMuted.value = mute;
+        });
+
+        Future<void> _toggleMute() async {
+          final prefs = await SharedPreferences.getInstance();
+          final newValue = !isMuted.value;
+          isMuted.value = newValue;
+          await prefs.setBool('isMuted', newValue);
+        }
+
         List<dynamic> board = data['board'];
         int? currentPlayer = data['currentPlayer'];
         int? diceRoll = data['diceRoll'];
@@ -83,10 +98,10 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
         if (_previousPlayer != null &&
             _previousPlayer != currentPlayer &&
             currentPlayer == widget.localPlayerNumber) {
-          _audioPlayer.play(AssetSource('sounds/turn.mp3'));
-          _pulse.value = true;
           Future.microtask(() async {
-            await _audioPlayer.play(AssetSource('sounds/turn.mp3'));
+            if (!isMuted.value) {
+              await _audioPlayer.play(AssetSource('sounds/turn.mp3'));
+            }
             _pulse.value = true;
             if (await Vibration.hasVibrator() ?? false) {
               Vibration.vibrate(duration: 100);
@@ -274,6 +289,15 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           appBar: AppBar(
             title: Text('Senet - ID partita: ${widget.gameId}'),
             actions: [
+              ValueListenableBuilder<bool>(
+                valueListenable: isMuted,
+                builder: (context, muted, _) {
+                  return IconButton(
+                    icon: Icon(muted ? Icons.volume_off : Icons.volume_up),
+                    onPressed: _toggleMute,
+                  );
+                },
+              ),
               IconButton(
                 icon: const Icon(Icons.home),
                 onPressed: () {

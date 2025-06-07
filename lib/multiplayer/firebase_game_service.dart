@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../ui/game_ui.dart';
 
 Future<String> createOnlineGame() async {
   final uid = FirebaseAuth.instance.currentUser?.uid;

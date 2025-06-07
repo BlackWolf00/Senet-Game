@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 import '../screens/win_dialog.dart';
@@ -28,11 +29,28 @@ class _GameScreenState extends State<GameScreen> {
   int player2Score = 0;
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ValueNotifier<bool> _pulse = ValueNotifier(false);
+  bool isMuted = false;
 
   @override
   void initState() {
     super.initState();
     initializeBoard(board);
+    _loadMutePreference();
+  }
+
+  void _loadMutePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isMuted = prefs.getBool('isMuted') ?? false;
+    });
+  }
+
+  void _toggleMute() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isMuted = !isMuted;
+      prefs.setBool('isMuted', isMuted);
+    });
   }
 
   void resetGame() {
@@ -58,15 +76,16 @@ class _GameScreenState extends State<GameScreen> {
       diceRoll = (count == 0) ? 5 : count;
       canRollDice = false;
     });
-    //controllo eventuali mosse
     if (!hasPossibleMove(board, currentPlayer, diceRoll)) {
       setState(() {
-        diceRoll = null; // Resetta il lancio
+        diceRoll = null;
         canRollDice = true;
         currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
         _pulse.value = true;
       });
-      playTurnSound(_audioPlayer);
+      if (!isMuted) {
+        playTurnSound(_audioPlayer);
+      }
       if (await Vibration.hasAmplitudeControl()) {
         Vibration.vibrate(amplitude: 128);
       }
@@ -146,7 +165,9 @@ class _GameScreenState extends State<GameScreen> {
           _pulse.value = true;
           canRollDice = true;
         });
-        playTurnSound(_audioPlayer);
+        if (!isMuted) {
+          playTurnSound(_audioPlayer);
+        }
         if (await Vibration.hasAmplitudeControl()) {
           Vibration.vibrate(amplitude: 128);
         }
@@ -200,7 +221,9 @@ class _GameScreenState extends State<GameScreen> {
             _pulse.value = true;
             canRollDice = true;
           });
-          playTurnSound(_audioPlayer);
+          if (!isMuted) {
+            playTurnSound(_audioPlayer);
+          }
           if (await Vibration.hasAmplitudeControl()) {
             Vibration.vibrate(amplitude: 128);
           }
@@ -216,6 +239,11 @@ class _GameScreenState extends State<GameScreen> {
       appBar: AppBar(
         title: Text('Senet'),
         actions: [
+          IconButton(
+            icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
+            tooltip: isMuted ? 'Audio disattivato' : 'Audio attivato',
+            onPressed: _toggleMute,
+          ),
           IconButton(
             icon: Icon(Icons.home),
             onPressed: () {
