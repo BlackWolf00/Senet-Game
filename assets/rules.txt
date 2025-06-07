@@ -1,0 +1,21 @@
+Senet è un antico gioco da tavolo egiziano.
+
+🎯 Obiettivo:
+Portare tutte le proprie pedine fuori dal tabellone prima dell'avversario.
+
+📦 Setup:
+- Due giocatori si sfidano su una griglia 3x10 (30 caselle).
+- Ogni giocatore ha 5 pedine.
+
+🎲 Movimento:
+- Tira i bastoncini per ottenere un numero da 1 a 5.
+- Muovi una pedina avanti di tante caselle quanto il risultato.
+
+✅ Regole:
+- Non puoi atterrare su una tua pedina.
+- Se atterri su una pedina avversaria singola, la scambi.
+- Alcune caselle hanno effetti speciali:
+  • Casa della Rinascita (casella 27): obbligo di fermarsi se si è respinti.
+  • Casella 26 e 28: impediscono il movimento se non con numero esatto.
+
+🏁 Vince chi fa uscire per primo tutte le pedine.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../multiplayer/screen/online_game_dialog.dart';
 import '../screens/game_screen.dart';
+import '../screens/game_rules_dialog.dart';
 import '../utils/ai_difficulty.dart';
 
 class MainMenu extends StatefulWidget {
@@ -16,7 +17,28 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Senet - Menu')),
+      appBar: AppBar(
+        title: Text('Senet - Menu'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.help_outline),
+              label: const Text('Regole del gioco'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => const SenetRulesDialog(),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

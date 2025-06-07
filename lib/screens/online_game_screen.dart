@@ -6,6 +6,7 @@ import 'package:vibration/vibration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/online_win_dialog.dart';
 import '../logic/game_logic.dart';
+import '../screens/game_rules_dialog.dart';
 import '../ui/game_ui.dart';
 
 class OnlineGameScreen extends StatefulWidget {
@@ -269,20 +270,39 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           appBar: AppBar(
             title: Text('Senet - ID partita: ${widget.gameId}'),
             actions: [
-              ValueListenableBuilder<bool>(
-                valueListenable: isMuted,
-                builder: (context, muted, _) {
-                  return IconButton(
-                    icon: Icon(muted ? Icons.volume_off : Icons.volume_up),
-                    onPressed: _toggleMute,
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.home),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.help_outline),
+                      tooltip: 'Regole del gioco',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => const SenetRulesDialog(),
+                        );
+                      },
+                    ),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: isMuted,
+                      builder: (context, muted, _) {
+                        return IconButton(
+                          icon: Icon(
+                            muted ? Icons.volume_off : Icons.volume_up,
+                          ),
+                          onPressed: _toggleMute,
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.home),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

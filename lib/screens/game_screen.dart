@@ -7,6 +7,7 @@ import '../logic/ai_logic.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 import '../screens/win_dialog.dart';
+import '../screens/game_rules_dialog.dart';
 import '../utils/ai_difficulty.dart';
 import '../utils/audio.dart';
 
@@ -222,16 +223,34 @@ class _GameScreenState extends State<GameScreen> {
       appBar: AppBar(
         title: Text('Senet'),
         actions: [
-          IconButton(
-            icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-            tooltip: isMuted ? 'Audio disattivato' : 'Audio attivato',
-            onPressed: _toggleMute,
-          ),
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.help_outline),
+                  tooltip: 'Regole del gioco',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => const SenetRulesDialog(),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
+                  tooltip: isMuted ? 'Audio disattivato' : 'Audio attivato',
+                  onPressed: _toggleMute,
+                ),
+                IconButton(
+                  icon: Icon(Icons.home),
+                  tooltip: 'Torna al menu principale',
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
