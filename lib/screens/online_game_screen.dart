@@ -147,26 +147,6 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           });
         }
 
-        void resetGame() async {
-          List<dynamic> newBoard = List.filled(30, null);
-          initializeBoard(newBoard);
-
-          await gameDoc.update({
-            'board': newBoard,
-            'diceRoll': null,
-            'canRollDice': true,
-            'selectedPiece': null,
-            'currentPlayer': 1,
-            'player1Score': 0,
-            'player2Score': 0,
-            'winner': null,
-            'lastUpdated': FieldValue.serverTimestamp(),
-            "lastEmoji": null,
-            "lastEmojiSender": null,
-            "lastEmojiTimestamp": FieldValue.serverTimestamp(),
-          });
-        }
-
         void rollDice() async {
           if (currentPlayer != widget.localPlayerNumber || !canRollDice) return;
 
@@ -460,13 +440,6 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                             child: Text('Muovi pezzo'),
                           ),
                           SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: resetGame,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                            ),
-                            child: Text("Resetta Partita"),
-                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
