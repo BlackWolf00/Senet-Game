@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:vibration/vibration.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../logic/ai_logic.dart';
 import '../logic/game_logic.dart';
 import '../ui/game_ui.dart';
 import '../screens/win_dialog.dart';
@@ -101,7 +102,13 @@ class _GameScreenState extends State<GameScreen> {
     List<int> validMoves = getValidAIMoves(board, diceRoll);
     if (validMoves.isEmpty) return;
 
-    int choice = selectAIMove(validMoves);
+    int choice = selectAIMove(
+      validMoves,
+      widget.aiDifficulty,
+      diceRoll,
+      board,
+      currentPlayer,
+    );
     selectedPiece = choice;
     movePiece();
   }
@@ -364,7 +371,10 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: canRollDice ? rollDice : null,
+                    onPressed:
+                        (canRollDice && !(widget.vsAI && currentPlayer == 2))
+                            ? rollDice
+                            : null,
                     child: Text('Lancia i bastoncini'),
                   ),
                   SizedBox(height: 8),
