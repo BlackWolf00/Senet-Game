@@ -83,7 +83,7 @@ class _GameScreenState extends State<GameScreen> {
         currentPlayer = (currentPlayer == 1) ? 2 : 1; // Cambia turno
         _pulse.value = true;
       });
-      if (!isMuted) {
+      if (!isMuted && !(widget.vsAI && currentPlayer == 2)) {
         playTurnSound(_audioPlayer);
       }
       if (await Vibration.hasAmplitudeControl()) {
@@ -165,7 +165,7 @@ class _GameScreenState extends State<GameScreen> {
           _pulse.value = true;
           canRollDice = true;
         });
-        if (!isMuted) {
+        if (!isMuted && !(widget.vsAI && currentPlayer == 2)) {
           playTurnSound(_audioPlayer);
         }
         if (await Vibration.hasAmplitudeControl()) {
@@ -221,7 +221,7 @@ class _GameScreenState extends State<GameScreen> {
             _pulse.value = true;
             canRollDice = true;
           });
-          if (!isMuted) {
+          if (!isMuted && !(widget.vsAI && currentPlayer == 2)) {
             playTurnSound(_audioPlayer);
           }
           if (await Vibration.hasAmplitudeControl()) {
