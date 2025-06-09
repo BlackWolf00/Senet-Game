@@ -181,7 +181,9 @@ class _GameScreenState extends State<GameScreen> {
                 canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
           setState(() {
             if (occupyingPlayer != null) {
-              if (selectedPiece == 25 && newPosition >= 27 && newPosition <= 29) {
+              if (selectedPiece == 25 &&
+                  newPosition >= 27 &&
+                  newPosition <= 29) {
                 int actualPlayer = board[selectedPiece!]!;
                 board[26] = occupyingPlayer;
                 board[newPosition] = actualPlayer;
@@ -245,157 +247,183 @@ class _GameScreenState extends State<GameScreen> {
                 IconButton(
                   icon: Icon(Icons.home),
                   tooltip: 'Torna al menu principale',
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/sfondo.jpg'),
-            fit: BoxFit.cover,
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/sfondo.jpg'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              margin: EdgeInsets.all(16),
+          child: Center(
+            child: SingleChildScrollView(
               padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  double width =
+                      constraints.maxWidth < 600 ? constraints.maxWidth : 600;
+
+                  return Container(
+                    width: width,
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    "Giocatore 1: $player1Score pedine uscite | Giocatore 2: $player2Score pedine uscite",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: _pulse,
-                    builder: (context, pulse, child) {
-                      return AnimatedScale(
-                        scale: pulse ? 1.1 : 1.0,
-                        duration: Duration(milliseconds: 250),
-                        onEnd: () => _pulse.value = false,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 12),
-                          padding: EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 16,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          decoration: BoxDecoration(
-                            color:
-                                widget.vsAI && currentPlayer == 2
-                                    ? Colors.indigo.withOpacity(0.7)
-                                    : currentPlayer == 1
-                                    ? Colors.red.withOpacity(0.7)
-                                    : Colors.black.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(12),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Punteggio",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                widget.vsAI && currentPlayer == 2
-                                    ? Icons.smart_toy
-                                    : currentPlayer == 1
-                                    ? Icons.person
-                                    : Icons.person_outline,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                widget.vsAI && currentPlayer == 2
-                                    ? "Turno dell'IA"
-                                    : currentPlayer == 1
-                                    ? "Turno del Giocatore 1"
-                                    : "Turno del Giocatore 2",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                        ),
+                        Text(
+                          "Giocatore Rosso: $player1Score | Giocatore Nero: $player2Score",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _pulse,
+                          builder: (context, pulse, child) {
+                            return AnimatedScale(
+                              scale: pulse ? 1.1 : 1.0,
+                              duration: Duration(milliseconds: 250),
+                              onEnd: () => _pulse.value = false,
+                              child: Container(
+                                margin: EdgeInsets.symmetric(vertical: 12),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      widget.vsAI && currentPlayer == 2
+                                          ? Colors.indigo.withOpacity(0.7)
+                                          : currentPlayer == 1
+                                          ? Colors.red.withOpacity(0.7)
+                                          : Colors.black.withOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      widget.vsAI && currentPlayer == 2
+                                          ? Icons.smart_toy
+                                          : currentPlayer == 1
+                                          ? Icons.person
+                                          : Icons.person_outline,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      widget.vsAI && currentPlayer == 2
+                                          ? "Turno dell'IA"
+                                          : currentPlayer == 1
+                                          ? "Turno del Giocatore 1"
+                                          : "Turno del Giocatore 2",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            );
+                          },
+                        ),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 10,
+                              ),
+                          itemCount: 30,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap:
+                                  () =>
+                                      selectPiece(index, board, currentPlayer),
+                              child: Container(
+                                margin: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: getTileColor(
+                                    index,
+                                    selectedPiece,
+                                    diceRoll,
+                                  ),
+                                  border: Border.all(color: Colors.white),
+                                ),
+                                child: Center(child: getPiece(board[index])),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed:
+                              (canRollDice &&
+                                      !(widget.vsAI && currentPlayer == 2))
+                                  ? rollDice
+                                  : null,
+                          child: Text('Lancia i bastoncini'),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Risultato: ${diceRoll ?? ""}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 10,
-                    ),
-                    itemCount: 30,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () => selectPiece(index, board, currentPlayer),
-                        child: Container(
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: getTileColor(index, selectedPiece, diceRoll),
-                            border: Border.all(color: Colors.white),
-                          ),
-                          child: Center(child: getPiece(board[index])),
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed:
+                              !(widget.vsAI && currentPlayer == 2)
+                                  ? movePiece
+                                  : null,
+                          child: Text('Muovi pezzo'),
                         ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed:
-                        (canRollDice && !(widget.vsAI && currentPlayer == 2))
-                            ? rollDice
-                            : null,
-                    child: Text('Lancia i bastoncini'),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Risultato: ${diceRoll ?? ""}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: resetGame,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                          ),
+                          child: Text("Resetta Partita"),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed:
-                        !(widget.vsAI && currentPlayer == 2) ? movePiece : null,
-                    child: Text('Muovi pezzo'),
-                  ),
-                  SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: resetGame,
-                    child: Text("Resetta Partita"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
           ),
