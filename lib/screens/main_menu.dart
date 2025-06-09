@@ -23,15 +23,22 @@ class _MainMenuState extends State<MainMenu> {
       appBar: AppBar(
         title: const Text('Senet - Menu'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: 'Regole del gioco',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) => const SenetRulesDialog(),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.help_outline),
+              label: const Text('Regole del gioco'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => const SenetRulesDialog(),
+                );
+              },
+            ),
           ),
         ],
       ),
