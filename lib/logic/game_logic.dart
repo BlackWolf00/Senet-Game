@@ -86,7 +86,7 @@ bool canExitFromSpecialHouse(int index, int roll) {
 bool isProtectedFromSwap(int index, board) {
   int? player = board[index];
   if (player == null) return false;
-  if (index == 29) return false;
+  if (index >= 27 && index <= 29) return false;
 
   // Controllo se il pezzo fa parte di una coppia protetta
   if (index > 0 && board[index - 1] == player) return true;
