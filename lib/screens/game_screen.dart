@@ -213,10 +213,10 @@ class _GameScreenState extends State<GameScreen> {
           if (await Vibration.hasAmplitudeControl()) {
             Vibration.vibrate(amplitude: 128);
           }
-          if (widget.vsAI && currentPlayer == 2) aiPlay();
         }
       }
     }
+    if (widget.vsAI && currentPlayer == 2) aiPlay();
   }
 
   @override
