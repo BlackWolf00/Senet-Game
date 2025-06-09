@@ -332,14 +332,6 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
                                 SizedBox(height: 8),
                                 Text(
                                   "Punteggio",
