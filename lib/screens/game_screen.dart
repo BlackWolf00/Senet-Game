@@ -223,14 +223,14 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Senet'),
+        title: const Text('Senet'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.help_outline),
+                  icon: const Icon(Icons.help_outline),
                   tooltip: 'Regole del gioco',
                   onPressed: () {
                     showDialog(
@@ -245,7 +245,7 @@ class _GameScreenState extends State<GameScreen> {
                   onPressed: _toggleMute,
                 ),
                 IconButton(
-                  icon: Icon(Icons.home),
+                  icon: const Icon(Icons.home),
                   tooltip: 'Torna al menu principale',
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -254,25 +254,30 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/sfondo.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Center(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  double width =
-                      constraints.maxWidth < 600 ? constraints.maxWidth : 600;
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = constraints.maxWidth;
+          final screenHeight = constraints.maxHeight;
+          final double maxContentWidth =
+              screenWidth > 700 ? 700 : screenWidth * 0.95;
 
-                  return Container(
-                    width: width,
-                    padding: EdgeInsets.all(16),
+          return Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/sfondo.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 300,
+                    maxWidth: maxContentWidth,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(16),
@@ -280,16 +285,8 @@ class _GameScreenState extends State<GameScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'Turno del giocatore: ${currentPlayer == 1 ? "Rosso" : "Nero"}',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
+                        const SizedBox(height: 8),
+                        const Text(
                           "Punteggio",
                           style: TextStyle(
                             fontSize: 18,
@@ -299,24 +296,28 @@ class _GameScreenState extends State<GameScreen> {
                         ),
                         Text(
                           "Giocatore Rosso: $player1Score | Giocatore Nero: $player2Score",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
+
+                        // Turno giocatore / IA
                         ValueListenableBuilder<bool>(
                           valueListenable: _pulse,
                           builder: (context, pulse, child) {
                             return AnimatedScale(
                               scale: pulse ? 1.1 : 1.0,
-                              duration: Duration(milliseconds: 250),
+                              duration: const Duration(milliseconds: 250),
                               onEnd: () => _pulse.value = false,
                               child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 12),
-                                padding: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                   vertical: 12,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
                                   horizontal: 16,
                                 ),
                                 decoration: BoxDecoration(
@@ -339,14 +340,14 @@ class _GameScreenState extends State<GameScreen> {
                                           : Icons.person_outline,
                                       color: Colors.white,
                                     ),
-                                    SizedBox(width: 8),
+                                    const SizedBox(width: 8),
                                     Text(
                                       widget.vsAI && currentPlayer == 2
                                           ? "Turno dell'IA"
                                           : currentPlayer == 1
-                                          ? "Turno del Giocatore 1"
-                                          : "Turno del Giocatore 2",
-                                      style: TextStyle(
+                                          ? "Turno del Giocatore Rosso"
+                                          : "Turno del Giocatore Nero",
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -358,76 +359,93 @@ class _GameScreenState extends State<GameScreen> {
                             );
                           },
                         ),
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 10,
-                              ),
-                          itemCount: 30,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap:
-                                  () =>
-                                      selectPiece(index, board, currentPlayer),
-                              child: Container(
-                                margin: EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: getTileColor(
-                                    index,
-                                    selectedPiece,
-                                    diceRoll,
+
+                        // Griglia del gioco
+                        LayoutBuilder(
+                          builder: (context, gridConstraints) {
+                            final double gridTileSize =
+                                (maxContentWidth - 80) / 10;
+
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 10,
+                                    mainAxisSpacing: 4,
+                                    crossAxisSpacing: 4,
+                                    childAspectRatio: 1.0,
                                   ),
-                                  border: Border.all(color: Colors.white),
-                                ),
-                                child: Center(child: getPiece(board[index])),
-                              ),
+                              itemCount: 30,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap:
+                                      () => selectPiece(
+                                        index,
+                                        board,
+                                        currentPlayer,
+                                      ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: getTileColor(
+                                        index,
+                                        selectedPiece,
+                                        diceRoll,
+                                      ),
+                                      border: Border.all(color: Colors.white),
+                                    ),
+                                    child: Center(
+                                      child: getPiece(board[index]),
+                                    ),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
-                        SizedBox(height: 16),
+
+                        const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed:
                               (canRollDice &&
                                       !(widget.vsAI && currentPlayer == 2))
                                   ? rollDice
                                   : null,
-                          child: Text('Lancia i bastoncini'),
+                          child: const Text('Lancia i bastoncini'),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'Risultato: ${diceRoll ?? ""}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ElevatedButton(
                           onPressed:
                               !(widget.vsAI && currentPlayer == 2)
                                   ? movePiece
                                   : null,
-                          child: Text('Muovi pezzo'),
+                          child: const Text('Muovi pezzo'),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ElevatedButton(
                           onPressed: resetGame,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent,
                           ),
-                          child: Text("Resetta Partita"),
+                          child: const Text("Resetta Partita"),
                         ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
