@@ -1,5 +1,13 @@
 Senet è un antico gioco da tavolo egiziano.
 
+🎮 Come giocare:
+- Usa il pulsante "Lancia i bastoncini" per ottenere il numero di caselle da muovere.
+- Seleziona una tua pedina:
+  • La casella della pedina selezionata viene evidenziata in rosso.
+  • La casella di destinazione viene evidenziata in viola.
+- Usa il pulsante "Muovi pezzo" per spostare la pedina.
+- Attendi il turno successivo !
+
 🎯 Obiettivo:
 Portare tutte le proprie pedine fuori dal tabellone prima dell'avversario.
 
@@ -8,14 +16,26 @@ Portare tutte le proprie pedine fuori dal tabellone prima dell'avversario.
 - Ogni giocatore ha 5 pedine.
 
 🎲 Movimento:
-- Tira i bastoncini per ottenere un numero da 1 a 5.
-- Muovi una pedina avanti di tante caselle quanto il risultato.
+- Lancia i bastoncini per ottenere un numero da 1 a 5.
+- Muovi una pedina in avanti di tante caselle quanto il risultato.
 
 ✅ Regole:
 - Non puoi atterrare su una tua pedina.
-- Se atterri su una pedina avversaria singola, la scambi.
+- Se atterri su una pedina avversaria non protetta, la scambi di posizione.
+  • Una pedina è protetta se:
+    • È adiacente ad almeno un'altra pedina dello stesso colore sulla stessa riga.
+    •Si trova in una delle seguenti caselle:
+      • Casa della Rinascita (casella verde).
+      •Case della Felicità (casella gialla).
+- Puoi saltare le altre pedine eccetto quando:
+  • Non puoi superare un gruppo di tre o più pedine adiacenti dell'avversario.
 - Alcune caselle hanno effetti speciali:
-  • Casa della Rinascita (casella 27): obbligo di fermarsi se si è respinti.
-  • Casella 26 e 28: impediscono il movimento se non con numero esatto.
+  • Casa della Rinascita (casella verde): casella di rinascita per le pedine che finiscono nella Casa dell'Acqua.
+  • Casa della Felicità (casella gialla): tutte le pedine devono passare di qui prima di proseguire.
+  • Casa dell'Acqua (casella azzurra): se una pedina finisce qua, ritorna alla Casa della Rinascita.
+  • Casa dei tre uccelli (prima casella arancione): si esce solo con un 3.
+  • Casa dei due uomini (seconda casella arancione): si esce solo con un 2.
+  • Casa di Ra (terza casella arancione): si esce solo con un 1.
+- Se non ci sono mosse valide, il turno viene saltato automaticamente.
 
 🏁 Vince chi fa uscire per primo tutte le pedine.
