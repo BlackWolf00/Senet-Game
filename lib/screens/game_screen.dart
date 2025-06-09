@@ -181,7 +181,7 @@ class _GameScreenState extends State<GameScreen> {
                 canExitFromSpecialHouse(selectedPiece!, diceRoll!))) {
           setState(() {
             if (occupyingPlayer != null) {
-              if (selectedPiece == 25 && newPosition == 29) {
+              if (selectedPiece == 25 && newPosition >= 27 && newPosition <= 29) {
                 int actualPlayer = board[selectedPiece!]!;
                 board[26] = occupyingPlayer;
                 board[newPosition] = actualPlayer;

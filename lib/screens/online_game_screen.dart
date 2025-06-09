@@ -185,12 +185,10 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           int to = calculateNewPosition(from, diceRoll);
           List newBoard = List.from(board);
 
-          // Caso speciale: Casa della felicità
           if (checkHouseOfHappinessRule(from, to) && to == 26) {
             to = findFirstAvailableBackwardPosition(newBoard);
           }
 
-          // Se il giocatore arriva alla fine (casella 30)
           if (to == 30) {
             final scoreKey =
                 widget.localPlayerNumber == 1 ? 'player1Score' : 'player2Score';
@@ -233,10 +231,8 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
           if (!canMove) return;
 
-          // Movimento con swap o semplice
           if (occupyingPlayer != null) {
-            if (from == 25 && to == 29) {
-              // Casa dell'acqua: rimbalzo e swap
+            if (from == 25 && to >= 27 && to <= 29) {
               int actualPlayer = newBoard[from]!;
               newBoard[from] = null;
               newBoard[to] = actualPlayer;
