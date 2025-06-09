@@ -79,6 +79,14 @@ class _GameScreenState extends State<GameScreen> {
       canRollDice = false;
     });
     if (!hasPossibleMove(board, currentPlayer, diceRoll)) {
+      if (widget.vsAI && currentPlayer == 1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Nessuna mossa possibile, turno saltato."),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
       setState(() {
         diceRoll = null;
         canRollDice = true;

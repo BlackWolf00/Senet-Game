@@ -160,6 +160,14 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
           bool possibleMove = hasPossibleMove(board, currentPlayer, result);
 
           if (!possibleMove) {
+            if (currentPlayer == widget.localPlayerNumber) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Nessuna mossa possibile, turno saltato."),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            }
             await gameDoc.update({
               'diceRoll': null,
               'canRollDice': true,
