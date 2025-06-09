@@ -147,7 +147,6 @@ class _MainMenuState extends State<MainMenu> {
       },
       style: ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(50),
-        textStyle: const TextStyle(fontSize: 16),
       ),
       child: Text(label),
     );
