@@ -17,7 +17,8 @@ Portare tutte le proprie pedine fuori dal tabellone prima dell'avversario.
 
 🎲 Movimento:
 - Lancia i bastoncini per ottenere un numero da 1 a 5.
-- Muovi una pedina in avanti di tante caselle quanto il risultato.
+- Muovi una pedina in avanti di tante caselle quanto il risultato,
+ seguendo il percorso a serpentina sul tabellone (zigzag tra le righe).
 
 ✅ Regole:
 - Non puoi atterrare su una tua pedina.
