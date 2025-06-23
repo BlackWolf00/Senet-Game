@@ -133,7 +133,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
               shownEmoji = receivedEmoji;
             });
             _emojiTimer?.cancel();
-            _emojiTimer = Timer(Duration(seconds: 5), () async {
+            _emojiTimer = Timer(Duration(seconds: 1), () async {
               if (mounted) {
                 setState(() {
                   shownEmoji = null;
