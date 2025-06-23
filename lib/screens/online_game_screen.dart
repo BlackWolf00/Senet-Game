@@ -409,7 +409,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                               Text(
                                                 currentPlayer ==
                                                         widget.localPlayerNumber
-                                                    ? "È il tuo turno!"
+                                                    ? "È il tuo turno ${widget.localPlayerNumber == 1 ? 'Giocatore Rosso' : 'Giocatore Nero'}!"
                                                     : "In attesa dell’avversario...",
                                                 style: const TextStyle(
                                                   color: Colors.white,
