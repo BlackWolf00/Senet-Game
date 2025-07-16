@@ -1,42 +1,42 @@
-Senet è un antico gioco da tavolo egiziano.
+Senet is an ancient Egyptian board game.
 
-🎮 Come giocare:
-- Usa il pulsante "Lancia i bastoncini" per ottenere il numero di caselle da muovere.
-- Seleziona una tua pedina:
-  • La casella della pedina selezionata viene evidenziata in rosso.
-  • La casella di destinazione viene evidenziata in viola.
-- Usa il pulsante "Muovi pezzo" per spostare la pedina.
-- Attendi il turno successivo !
+🎮 How to Play:
+- Use the "Throw Sticks" button to roll and determine how many squares to move.
+- Select one of your pieces:
+  • The selected piece’s square will be highlighted in red.
+  • The destination square will be highlighted in purple.
+- Use the "Move Piece" button to move your piece.
+- Wait for your next turn!
 
-🎯 Obiettivo:
-Portare tutte le proprie pedine fuori dal tabellone prima dell'avversario.
+🎯 Goal:
+Get all your pieces off the board before your opponent does.
 
 📦 Setup:
-- Due giocatori si sfidano su una griglia 3x10 (30 caselle).
-- Ogni giocatore ha 5 pedine.
+- Two players face off on a 3x10 grid (30 squares).
+- Each player has 5 pieces.
 
-🎲 Movimento:
-- Lancia i bastoncini per ottenere un numero da 1 a 5.
-- Muovi una pedina in avanti di tante caselle quanto il risultato,
- seguendo il percorso a serpentina sul tabellone (zigzag tra le righe).
+🎲 Movement:
+- Throw the sticks to get a result from 1 to 5.
+- Move a piece forward by the rolled number of squares,
+  following the snake-like path on the board (zigzagging across the rows).
 
-✅ Regole:
-- Non puoi atterrare su una tua pedina.
-- Se atterri su una pedina avversaria non protetta, la scambi di posizione.
-  • Una pedina è protetta se:
-    • È adiacente ad almeno un'altra pedina dello stesso colore sulla stessa riga.
-    •Si trova in una delle seguenti caselle:
-      • Casa della Rinascita (casella verde).
-      •Case della Felicità (casella gialla).
-- Puoi saltare le altre pedine eccetto quando:
-  • Non puoi superare un gruppo di tre o più pedine adiacenti dell'avversario.
-- Alcune caselle hanno effetti speciali:
-  • Casa della Rinascita (casella verde): casella di rinascita per le pedine che finiscono nella Casa dell'Acqua.
-  • Casa della Felicità (casella gialla): tutte le pedine devono passare di qui prima di proseguire.
-  • Casa dell'Acqua (casella azzurra): se una pedina finisce qua, ritorna alla Casa della Rinascita.
-  • Casa dei tre uccelli (prima casella arancione): si esce solo con un 3.
-  • Casa dei due uomini (seconda casella arancione): si esce solo con un 2.
-  • Casa di Ra (terza casella arancione): si esce solo con un 1.
-- Se non ci sono mosse valide, il turno viene saltato automaticamente.
+✅ Rules:
+- You cannot land on one of your own pieces.
+- If you land on an unprotected opponent piece, you swap places with it.
+  • A piece is protected if:
+    • It is adjacent to at least one other piece of the same color on the same row.
+    • It is on one of the following special squares:
+      • House of Rebirth (green square).
+      • House of Happiness (yellow square).
+- You can jump over other pieces, except when:
+  • You cannot pass over a group of three or more adjacent opponent pieces.
+- Some squares have special effects:
+  • House of Rebirth (green): respawn point for pieces that fall into the House of Water.
+  • House of Happiness (yellow): all pieces must stop here before continuing.
+  • House of Water (light blue): a piece landing here returns to the House of Rebirth.
+  • House of Three Birds (first orange square): can exit only with a roll of 3.
+  • House of Two Men (second orange square): can exit only with a roll of 2.
+  • House of Ra (third orange square): can exit only with a roll of 1.
+- If there are no valid moves, the turn is automatically skipped.
 
-🏁 Vince chi fa uscire per primo tutte le pedine.
+🏁 The first player to remove all their pieces from the board wins.
