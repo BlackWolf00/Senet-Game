@@ -21,20 +21,20 @@ class GameLobbyPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.copy),
-            tooltip: 'Copia ID partita',
+            tooltip: 'Copy Game ID',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: gameId));
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('ID partita copiato negli appunti')),
+                SnackBar(content: Text('Game ID copied to clipboard')),
               );
             },
           ),
           IconButton(
             icon: Icon(Icons.share),
-            tooltip: 'Condividi ID partita',
+            tooltip: 'Share Game ID',
             onPressed: () {
               Share.share(
-                'Unisciti alla mia partita Senet! ID partita: $gameId',
+                'Join my Senet game! Game ID: $gameId',
               );
             },
           ),
@@ -56,7 +56,7 @@ class GameLobbyPage extends StatelessWidget {
 
             final data = snapshot.data!.data() as Map<String, dynamic>?;
             if (data == null) {
-              return const Center(child: Text('Partita non trovata.'));
+              return const Center(child: Text('Game not found.'));
             }
 
             final player1 = data['player1'];
@@ -105,7 +105,7 @@ class GameLobbyPage extends StatelessWidget {
                       Icon(Icons.people, size: 48, color: Colors.white),
                       const SizedBox(height: 16),
                       Text(
-                        'In attesa di un avversario...',
+                        'Waiting for an opponent...',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -114,13 +114,13 @@ class GameLobbyPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Giocatori nella stanza: ${players.length}/2',
+                        'Players in the room: ${players.length}/2',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                       const SizedBox(height: 16),
                       ...players.map(
                         (uid) => Text(
-                          'Giocatore: $uid',
+                          'Player: $uid',
                           style: TextStyle(color: Colors.white70),
                         ),
                       ),

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 Future<String> createOnlineGame() async {
   final uid = FirebaseAuth.instance.currentUser?.uid;
-  if (uid == null) throw Exception("Utente non autenticato");
+  if (uid == null) throw Exception("Unauthenticated user");
 
   List<int?> board = List.filled(30, null);
   for (int i = 0; i < 10; i++) {

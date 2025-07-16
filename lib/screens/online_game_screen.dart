@@ -163,7 +163,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
             if (currentPlayer == widget.localPlayerNumber) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text("Nessuna mossa possibile, turno saltato."),
+                  content: Text("No move possible, turn skipped."),
                   duration: Duration(seconds: 1),
                 ),
               );
@@ -272,7 +272,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Senet - ID partita: ${widget.gameId}'),
+            title: Text('Senet - Game ID: ${widget.gameId}'),
             actions: [
               Padding(
                 padding: const EdgeInsets.only(right: 12.0),
@@ -280,7 +280,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.help_outline),
-                      tooltip: 'Regole del gioco',
+                      tooltip: 'Rules of the game',
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -347,7 +347,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                 children: [
                                   SizedBox(height: 8),
                                   Text(
-                                    "Punteggio",
+                                    "Score",
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -355,7 +355,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "Giocatore Rosso: $player1Score | Giocatore Nero: $player2Score",
+                                    "Red Player: $player1Score | Black Player: $player2Score",
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -409,8 +409,8 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                               Text(
                                                 currentPlayer ==
                                                         widget.localPlayerNumber
-                                                    ? "È il tuo turno ${widget.localPlayerNumber == 1 ? 'Giocatore Rosso' : 'Giocatore Nero'}!"
-                                                    : "In attesa dell’avversario...",
+                                                    ? "It's your turn ${widget.localPlayerNumber == 1 ? 'Red Player' : 'Black Player'}!"
+                                                    : "Waiting for the opponent...",
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 18,
@@ -477,11 +477,11 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                                     widget.localPlayerNumber)
                                             ? rollDice
                                             : null,
-                                    child: Text('Lancia i bastoncini'),
+                                    child: Text('Throw the sticks'),
                                   ),
                                   SizedBox(height: 8),
                                   Text(
-                                    'Risultato: ${diceRoll ?? ""}',
+                                    'Result: ${diceRoll ?? ""}',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -496,7 +496,7 @@ class _OnlineGameScreenState extends State<OnlineGameScreen> {
                                                     widget.localPlayerNumber)
                                             ? () => movePieceOnline()
                                             : null,
-                                    child: Text('Muovi pezzo'),
+                                    child: Text('Move Piece'),
                                   ),
                                   SizedBox(height: 8),
                                   Row(

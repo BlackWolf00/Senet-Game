@@ -82,7 +82,7 @@ class _GameScreenState extends State<GameScreen> {
       if (widget.vsAI && currentPlayer == 1) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Nessuna mossa possibile, turno saltato."),
+            content: Text("No move possible, turn skipped."),
             duration: Duration(seconds: 1),
           ),
         );
@@ -239,7 +239,7 @@ class _GameScreenState extends State<GameScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.help_outline),
-                  tooltip: 'Regole del gioco',
+                  tooltip: 'Rules of the game',
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -249,12 +249,12 @@ class _GameScreenState extends State<GameScreen> {
                 ),
                 IconButton(
                   icon: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
-                  tooltip: isMuted ? 'Audio disattivato' : 'Audio attivato',
+                  tooltip: isMuted ? 'Audio muted' : 'Audio enabled',
                   onPressed: _toggleMute,
                 ),
                 IconButton(
                   icon: const Icon(Icons.home),
-                  tooltip: 'Torna al menu principale',
+                  tooltip: 'Return to main menu',
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -295,7 +295,7 @@ class _GameScreenState extends State<GameScreen> {
                       children: [
                         const SizedBox(height: 8),
                         const Text(
-                          "Punteggio",
+                          "Score",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -303,7 +303,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                         Text(
-                          "Giocatore Rosso: $player1Score | Giocatore Nero: $player2Score",
+                          "Red Player: $player1Score | Black Player: $player2Score",
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -351,10 +351,10 @@ class _GameScreenState extends State<GameScreen> {
                                     const SizedBox(width: 8),
                                     Text(
                                       widget.vsAI && currentPlayer == 2
-                                          ? "Turno dell'IA"
+                                          ? "AI Turn"
                                           : currentPlayer == 1
-                                          ? "Turno del Giocatore Rosso"
-                                          : "Turno del Giocatore Nero",
+                                          ? "Red Player's Turn"
+                                          : "Black Player's Turn",
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -419,11 +419,11 @@ class _GameScreenState extends State<GameScreen> {
                                       !(widget.vsAI && currentPlayer == 2))
                                   ? rollDice
                                   : null,
-                          child: const Text('Lancia i bastoncini'),
+                          child: const Text('Throw the sticks'),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Risultato: ${diceRoll ?? ""}',
+                          'Result: ${diceRoll ?? ""}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -436,7 +436,7 @@ class _GameScreenState extends State<GameScreen> {
                               !(widget.vsAI && currentPlayer == 2)
                                   ? movePiece
                                   : null,
-                          child: const Text('Muovi pezzo'),
+                          child: const Text('Move piece'),
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton(
@@ -444,7 +444,7 @@ class _GameScreenState extends State<GameScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.redAccent,
                           ),
-                          child: const Text("Resetta Partita"),
+                          child: const Text("Reset Game"),
                         ),
                       ],
                     ),

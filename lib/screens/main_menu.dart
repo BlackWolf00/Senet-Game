@@ -27,7 +27,7 @@ class _MainMenuState extends State<MainMenu> {
             padding: const EdgeInsets.only(right: 12.0),
             child: ElevatedButton.icon(
               icon: Icon(Icons.help_outline),
-              label: const Text('Regole del gioco'),
+              label: const Text('Rules of the game'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -64,7 +64,7 @@ class _MainMenuState extends State<MainMenu> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      'Seleziona difficoltà IA:',
+                      'Select AI difficulty:',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -104,9 +104,9 @@ class _MainMenuState extends State<MainMenu> {
                           }).toList(),
                     ),
                     const SizedBox(height: 32),
-                    _buildModeButton('Gioca contro l\'IA', true),
+                    _buildModeButton('Play against the AI', true),
                     const SizedBox(height: 16),
-                    _buildModeButton('Multiplayer Locale', false),
+                    _buildModeButton('Local Multiplayer', false),
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
@@ -122,7 +122,7 @@ class _MainMenuState extends State<MainMenu> {
                           vertical: 12.0,
                         ),
                       ),
-                      child: const Text('Multiplayer Online'),
+                      child: const Text('Online Multiplayer'),
                     ),
                   ],
                 ),

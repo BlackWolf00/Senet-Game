@@ -9,7 +9,7 @@ class SenetRulesDialog extends StatefulWidget {
 }
 
 class _SenetRulesDialogState extends State<SenetRulesDialog> {
-  String rulesText = 'Caricamento regole...';
+  String rulesText = 'Loading rules...';
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _SenetRulesDialogState extends State<SenetRulesDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Regole di Senet', style: TextStyle(color: Colors.white)),
+          const Text('Senet Rules', style: TextStyle(color: Colors.white)),
           IconButton(
             icon: const Icon(Icons.close, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),

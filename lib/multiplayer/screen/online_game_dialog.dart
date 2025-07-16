@@ -18,7 +18,7 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Multiplayer Online', textAlign: TextAlign.center),
+      title: Text('Online Multiplayer', textAlign: TextAlign.center),
       content:
           isLoading
               ? Center(heightFactor: 1.5, child: CircularProgressIndicator())
@@ -37,12 +37,12 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
                         ),
                       );
                     },
-                    child: Text('Crea nuova partita'),
+                    child: Text('Create new game'),
                   ),
                   SizedBox(height: 10),
                   TextField(
                     decoration: InputDecoration(
-                      labelText: 'ID partita',
+                      labelText: 'Game ID',
                       border: OutlineInputBorder(),
                     ),
                     onChanged: (value) => gameId = value.trim(),
@@ -77,13 +77,13 @@ class _OnlineGameDialogState extends State<OnlineGameDialog> {
                           setState(() => isLoading = true);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Partita non trovata o già piena.'),
+                              content: Text('Match not found or already full.'),
                             ),
                           );
                         }
                       }
                     },
-                    child: Text('Unisciti a una partita'),
+                    child: Text('Join a game'),
                   ),
                 ],
               ),

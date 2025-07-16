@@ -8,8 +8,8 @@ void showOnlineWinDialog(BuildContext context, int winningPlayer) {
     barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text("🎉 Vittoria!"),
-        content: Text("Il Giocatore $winningPlayer ha vinto la partita."),
+        title: Text("🎉 Victory!"),
+        content: Text("Player $winningPlayer won the game."),
         actions: [
           /*TextButton(
             onPressed: () async {
@@ -28,7 +28,7 @@ void showOnlineWinDialog(BuildContext context, int winningPlayer) {
             onPressed: () {
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
-            child: Text('Torna al menu'),
+            child: Text('Back to menu'),
           ),
         ],
       );
